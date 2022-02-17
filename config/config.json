@@ -1,0 +1,12 @@
+{
+  "disableAuth": "false",
+  "colors": {
+    "primary": "#80ba24",
+    "secondary": "#4a5c66",
+    "accent": "#8c9eff",
+    "error": "#b71c1c"
+  },
+  "backendIP": "http://localhost:3000/",
+  "title": "Pick-By-Light",
+  "searchDuration": 60
+}

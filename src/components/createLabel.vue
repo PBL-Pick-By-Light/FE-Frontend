@@ -1,10 +1,11 @@
 <template>
   <v-row justify="center">
+    <!--This dialog window will be opened for creating new Label-->
     <v-dialog
       v-model="dialog"
-      persistent
       max-width="600px"
     >
+      <!--This button is paced on addItem page -->
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           color="green"
@@ -13,16 +14,17 @@
           v-bind="attrs"
           v-on="on"
         >
-          <v-icon>mdi-plus</v-icon>
+          {{$t('Titel')}}<v-icon>mdi-plus</v-icon>
         </v-btn>
       </template>
       <v-card >
         <v-card-title>
-          <span class="text-h5">Create New Label</span>
+          <span class="text-h5">{{$t('Titel')}}</span>
         </v-card-title>
         <v-card-text>
           <v-container>
-            <v-row v-for="(chosen,index) in testLang" :key="index">
+            <!-- There are text fields for input new labels -->
+            <v-row v-for="(chosen,index) in languages" :key="index">
               <v-col cols="12" md="6">
                 <v-text-field
                 label="Language"
@@ -39,6 +41,7 @@
                 ></v-text-field>
                 </v-col>
             </v-row>
+            <!--There is color Picker vor choosing color for chips(labels)-->
             <v-row>
               <v-col cols="12" md="6">
                 <v-color-picker
@@ -49,6 +52,7 @@
                   swatches-max-height="100">
                 </v-color-picker>
               </v-col >
+              <!--There is example of chips -->
               <v-col cols="12" md="6">
                 <p>Color:</p>
                 <p>{{pickedColor}}</p>
@@ -64,6 +68,7 @@
             </v-row>
           </v-container>
         </v-card-text>
+        <!--There is the buttons for saving new labels and closing the dialog window-->
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
@@ -80,18 +85,53 @@
           >
             Save
           </v-btn>
-          {{this.pickedColor}}
         </v-card-actions>
       </v-card>
+      <!--There are snackbar messages for success and error events -->
+      <div>
+        <v-snackbar
+          v-model="success"
+          color="green"
+        >
+          {{ $t('SuccessText') }}
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              text
+              v-bind="attrs"
+              @click="success = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
+      </div>
+      <div>
+        <v-snackbar
+          color="red"
+          v-model="error"
+        >
+          {{ $t('ErrorText') }}
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              text
+              v-bind="attrs"
+              @click="error = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
+      </div>
     </v-dialog>
   </v-row>
+
 </template>
 
 <script lang="ts">
 
 import LabelDataService from '@/services/labelDataService'
 import languageDataService from '@/services/languageDataService'
-import { Item } from '@/types'
+import { Language } from '@/types'
 import Vue from 'vue'
 export default Vue.extend({
   name: 'createLabel',
@@ -101,9 +141,12 @@ export default Vue.extend({
       pickedColor: '#FF00FF',
       value: '',
       chips: '',
+      success: false,
+      error: false,
+      text: '',
       langInput: [],
       labelList: [],
-      languages: [],
+      languages: [] as Language[],
       testLang: [
         {
           lang: 'de',
@@ -117,6 +160,14 @@ export default Vue.extend({
       list: [] as any
     }
   },
+  watch: {
+    pickedColor (value) {
+      // temporary fix while there is no way to disable the alpha channel in the colorpicker component: https://github.com/vuetifyjs/vuetify/issues/9590
+      if (value.toString().match(/#[a-zA-Z0-9]{8}/)) {
+        this.pickedColor = value.substr(0, 7)
+      }
+    }
+  },
   computed: {
     chipItem: {
       get () {
@@ -125,6 +176,9 @@ export default Vue.extend({
     }
   },
   mounted () {
+    /**
+    * Get list of all languages
+    */
     languageDataService.getAll()
       .then((result) => {
         this.languages = result.data
@@ -137,28 +191,16 @@ export default Vue.extend({
   },
   methods: {
     sendLabel () {
-      // var langList = []
-      // var label = []
-      // this.testLang.forEach((value) => {
-      //   langList.push(value.lang)
-      // })
-      // for (let i = 0; i < this.labelList.length; i++) {
-      //   label.push({ language: langList[i], value: this.labelList[i] })
-      // }
-      // console.log(label)
-
-      var commonKeys = []
+      var commonKeys : string [] = []
       this.languages.forEach((value) => {
         commonKeys.push(value.lang)
       })
       /**
-       * Converts All Names to a Map with name: {lang: nameInLang}
+       * Converts All Names to a Map with Format of "name: {lang: nameInLang}"
        */
-      const zipArrays = (keysArray, valuesArray) => Object.fromEntries(keysArray.map((value, index) => [value, valuesArray[index]]))
+      const zipArrays = (keysArray: any, valuesArray: any) => Object.fromEntries(keysArray.map((value, index) => [value, valuesArray[index]]))
 
       const name = zipArrays(commonKeys, this.labelList)
-      console.log(name)
-      console.log('ALLNAMES')
       /**
        * Converts All Descriptions to a Map with description: {lang: descriptionInLang}
        */
@@ -168,22 +210,16 @@ export default Vue.extend({
 
       const label: any = {
         name,
-        colour: '#FF00FF'
+        colour: this.pickedColor
       }
-      console.log(label)
-      LabelDataService.create(label).then(response => {
-        console.log(response)
+
+      LabelDataService.create(label).then(() => {
+        this.success = true
+        this.$emit('exit', true)
       }).catch(e => {
-        // Falls Error, schreibe ihn in die Konsole
-        console.log(e)
+        this.error = true
+        console.error(e)
       })
-      /* LabelDataService.create(this.labelsName).then(response => {
-        console.log(response)
-      }).catch(e => {
-        // Falls Error, schreibe ihn in die Konsole
-        console.log(e)
-      }) */
-      console.log('geschafft')
       this.labelList = []
     }
   }
@@ -193,3 +229,18 @@ export default Vue.extend({
 <style scoped>
 
 </style>
+
+<i18n>
+{
+  "en": {
+    "Titel": "Create New Label",
+    "SuccessText": "Success! New Label created",
+    "ErrorText": "Error! Something goes wrong. Try again"
+  },
+  "de": {
+    "Titel": " Neues Label erstellen",
+    "SuccessText": "Erfolg! Neues Label wurde erstellt",
+    "ErrorText": "Fehler! Etwas ist fehlgeschlagen. Probieren Sie das noch Mal"
+  }
+}
+</i18n>

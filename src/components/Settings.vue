@@ -14,7 +14,7 @@
                     elevation="9"
                     dot-size="8"
                     hide-mode-switch
-                    v-model="colorSearchModel"
+                    v-model="color"
                     mode="hex"
                     show-swatches
                     swatches-max-height="250"
@@ -23,7 +23,7 @@
                 <v-col class="col-lg-3">
                   <v-container>
 <!--                    Button to save color, changes color dynamically with v-model picker variable-->
-                    <v-btn class="mt-5" :color=colorSearchModel block elevation="9">{{ $t('searchcolor') }}</v-btn>
+                    <v-btn class="mt-5" :color=color block elevation="9">{{ $t('searchcolor') }}</v-btn>
 <!--                    Button to restore default search color-->
                     <v-btn class="mt-5" block elevation="9">{{ $t('standard') }}</v-btn>
                   </v-container>
@@ -40,7 +40,7 @@
                   <v-radio-group v-model="selectedLanguage" id="radios">
                     <v-radio v-for="(lang,index) in this.allLanguages" :key="index" :label="lang.lang"></v-radio>
                   </v-radio-group>
-                  <v-btn elevation="9" style="margin-top: 20px">{{ $t('save') }}</v-btn>
+                  <v-btn elevation="9" style="margin-top: 20px" >{{ $t('save') }}</v-btn>
                 </v-col>
               </v-row>
             </v-expansion-panel-content>
@@ -48,9 +48,23 @@
           <!--          Admin Panels disabled for basic users-->
         </v-expansion-panels>
       </v-row>
-      <v-row class="mt-5" v-if="isAdmin" justify="center">
+      <v-row class="mt-5" v-if="true" justify="center">
           <h1 style="margin-bottom: 10px">{{ $t('adminHeadline') }}</h1>
           <v-expansion-panels  popout>
+            <v-expansion-panel>
+              <v-expansion-panel-header>{{ $t('globalLanguage') }}</v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-row>
+                  <!--                Radio buttons to select standard language and a button to save this configuration-->
+                  <v-col offset-lg="2" class="col-lg-3">
+                    <v-radio-group v-model="selectedGlobalLanguage" id="radios">
+                      <v-radio v-for="(lang,index) in this.allLanguages" :key="index" :label="lang.lang"></v-radio>
+                    </v-radio-group>
+                    <v-btn elevation="9" style="margin-top: 20px" @click="saveSettings">{{ $t('save') }}</v-btn>
+                  </v-col>
+                </v-row>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
             <v-expansion-panel>
               <v-expansion-panel-header>Theme {{ $t('themecolor') }}</v-expansion-panel-header>
               <v-expansion-panel-content>
@@ -71,10 +85,10 @@
                   <v-col class="col-lg-3">
                     <v-container>
                       <!--                    Different buttons to save the picked color to a specific setting-->
-                      <v-btn class="mt-5" color ="primary" @click="set_primary_color; save_settings" block elevation="9">{{ $t('primary') }}</v-btn>
-                      <v-btn class="mt-5" color ="secondary" @click="set_secondary_color; save_settings" block elevation="9">{{ $t('secondary') }}</v-btn>
-                      <v-btn class="mt-5" color ="accent" @click="set_accent_color; save_settings" block elevation="9">{{ $t('accent') }}</v-btn>
-                      <v-btn class="mt-5" color ="error" @click="set_error_color; save_settings" block elevation="9">{{ $t('error') }}</v-btn>
+                      <v-btn class="mt-5" color ="primary" @click="set_primary_color" block elevation="9">{{ $t('primary') }}</v-btn>
+                      <v-btn class="mt-5" color ="secondary" @click="set_secondary_color" block elevation="9">{{ $t('secondary') }}</v-btn>
+                      <v-btn class="mt-5" color ="accent" @click="set_accent_color" block elevation="9">{{ $t('accent') }}</v-btn>
+                      <v-btn class="mt-5" color ="error" @click="set_error_color" block elevation="9">{{ $t('error') }}</v-btn>
                       <v-btn class="mt-5" @click="set_default_color" block elevation="9">{{ $t('standard') }}</v-btn>
                       <v-btn class="mt-5" @click="set_manufacturer_color" block elevation="9">{{ $t('manufacturer') }}</v-btn>
                     </v-container>
@@ -87,6 +101,7 @@
               <v-expansion-panel-content>
                 <v-row>
                   <v-col offset-lg="2" class="col-lg-3">
+                    <h3> Needs to be implemented in Backend</h3>
                     <v-container>
                       <!--                Image Uploader-->
                       <v-file-input
@@ -107,8 +122,6 @@
 </template>
 
 <script lang="ts">
-// Color-service Connection for future data-bank connection
-import ColorService from '@/services/colorService'
 import languageDataService from '@/services/languageDataService'
 import SettingsService from '@/services/settingsService'
 import Vue from 'vue'
@@ -116,12 +129,11 @@ export default Vue.extend({
   name: 'UserSettings',
   data () {
     return {
-      // Variable for the admin-view
-      adminEnabled: false,
       // Smart variable for the standard locale definition
-      selectedLanguage: this.$root.$i18n.locale,
+      selectedLanguage: 0,
       // Starting colors for the color picker
       color: '#FF00FFFF',
+      selectedGlobalLanguage: 0,
       colorSearchModel: '#FF00FFFF',
       id: '',
       primColor: '',
@@ -137,23 +149,34 @@ export default Vue.extend({
     }
   },
   computed: {
+    // Checks if the logged-in user has administrator rights
     isAdmin () {
       if (this.$store.state.auth.role === 'admin') return true
       else return false
     }
   },
+  watch: {
+    color (value) {
+      // temporary fix while there is no way to disable the alpha channel in the colorpicker component: https://github.com/vuetifyjs/vuetify/issues/9590
+      // Alpha Channel is generated by component, but can't be used by Theme
+      if (value.toString().match(/#[a-zA-Z0-9]{8}/)) {
+        this.color = value.substr(0, 7)
+      }
+    }
+  },
   methods: {
+    // Gets the settings and languages via the related services
     fetchInfos () {
-      console.log('fetchInfos')
       SettingsService.getSettings().then((result) => {
         this.currentSettings = result
-        console.log(this.currentSettings)
-      }).then((result) => {
+      }).then(() => {
         languageDataService.getAll()
           .then((result) => {
             this.allLanguages = result.data
+            // Checks if standard-language exists.
             const index = this.allLanguages.findIndex(key => key._id === this.currentSettings.lanugage)
-            if (index === -1) this.selectedLanguage = this.allLanguages[index]
+            // If not Found select first
+            if (index === -1) this.selectedLanguage = 0
           }).catch(err => {
             console.error(err)
             throw err
@@ -163,16 +186,12 @@ export default Vue.extend({
         throw err
       })
     },
-    // AdminToggle for presentation
-    toggle_admin_mode: function () {
-      this.adminEnabled = !this.adminEnabled
-    },
     /**
      * Saves Settings in Database
      */
     saveSettings () {
       const Settings = {
-        language: this.selectedLanguage._id,
+        language: this.allLanguages[this.selectedGlobalLanguage]._id,
         colors: [
           this.$vuetify.theme.themes.light.primary,
           this.$vuetify.theme.themes.light.secondary,
@@ -238,6 +257,7 @@ export default Vue.extend({
 <i18n>
 {
   "en": {
+    "globalLanguage": "Globale Standard Language",
     "headline": "Settings",
     "adminHeadline": "Admin-Settings",
     "color": "Search Color",
@@ -256,6 +276,7 @@ export default Vue.extend({
     "manufacturer": "Manufacturer Colors"
   },
   "de": {
+    "globalLanguage": "Globale Standard-Sprache",
     "adminHeadline": "Admin-Einstellungen",
     "headline": "Einstellungen",
     "color": "Suchfarbe",

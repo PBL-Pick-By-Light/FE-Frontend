@@ -1,3 +1,4 @@
+<!--Wrapper for the AddItem-Component-->
 <template>
   <div>
     <AddItem></AddItem>

@@ -6,12 +6,12 @@
           <v-flex xs16 sm12 md8>
             <v-card class="elevation-12" style="border-radius:20px">
               <v-row>
-                <v-col class="col-lg-4">
+                <v-col class="col-lg-4  col-6">
                   <v-container>
                     <!-- AutoComplete SearchBar with Chips and slotted templates -->
                     <v-autocomplete
                       v-model="selectedRoom"
-                      :items="this.completeRooms"
+                      :items="completeRooms"
                       chips
                       :item-text="getCurrentNameString"
                       filled
@@ -21,18 +21,17 @@
                     >
                       <!-- @template Use this slot for the selected Labels inside V-Autocomplete -->
                       <template v-slot:selection="data">
-                        <v-chip  dark :color="data.item.colour"> {{ getName(data.item) }} </v-chip>
+<!--                        {{ getName(data.item) }}-->
+                        <v-chip> {{getName(data.item)}} </v-chip>
                       </template>
                       <!-- @template Use this slot for the expanded List when V-Autocomplete is selected -->
                       <template v-slot:item="{ item, on, attrs }">
-                        <v-list-item v-on="on" v-bind="attrs" #default="{ active }">
+                        <v-list-item v-on="on" v-bind="attrs">
                           <!--          Enables CheckBox usage to select multiple labels-->
-                          <v-list-item-action>
-                            <v-checkbox :color="item.colour" :input-value="active"> </v-checkbox>
-                          </v-list-item-action>
                           <v-list-item-content>
                             <v-list-item-title>
-                              <v-chip dark :color="item.colour"> {{ getName(item) }} </v-chip>
+                              <v-chip> {{ getName(item) }} </v-chip>
+<!--                              <v-btn>X</v-btn>-->
                             </v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
@@ -59,31 +58,6 @@
                             </template>
                             <v-card>
                               <room></room>
-<!--                              <v-card-title class="justify-center">-->
-<!--                                {{ $t('newroom') }}-->
-<!--                              </v-card-title>-->
-<!--                              <v-row><v-col>-->
-<!--                                <v-spacer></v-spacer>-->
-<!--                              </v-col>-->
-<!--                                <v-col>-->
-<!--                                  &lt;!&ndash; text-field for entering the roomname &ndash;&gt;-->
-<!--                                  <v-text-field style="margin-right: 12px;margin-left: 12px;-->
-<!--                                  align-self: center" :label="$t('enterroomname')" clearable></v-text-field>-->
-<!--                                </v-col>-->
-<!--                                <v-col><v-spacer></v-spacer></v-col>-->
-<!--                              </v-row>-->
-<!--                              <v-divider></v-divider>-->
-<!--                              <v-card-actions>-->
-<!--                                <v-spacer></v-spacer>-->
-<!--                                &lt;!&ndash; @v-btn disables the dialog window &ndash;&gt;-->
-<!--                                <v-btn-->
-<!--                                  color="primary"-->
-<!--                                  text-->
-<!--                                  @click="dialogRoom = false"-->
-<!--                                >-->
-<!--                                  {{ $t('createroom') }}-->
-<!--                                </v-btn>-->
-<!--                              </v-card-actions>-->
                             </v-card>
                           </v-dialog>
                         </v-list-item>
@@ -91,88 +65,12 @@
                     </v-autocomplete>
                   </v-container>
                 </v-col>
-                <v-col class="col-lg-4">
+                <v-col class="col-lg-4 col-6">
                   <v-container>
-                    <v-text-field :label="$t('IP')" filled disabled value="Test"></v-text-field>
-                    <!-- AutoComplete SearchBar with Chips and slotted templates -->
-<!--                    <v-autocomplete-->
-<!--                      v-model="selectedIP"-->
-<!--                      :items="this.allIPAdresses"-->
-<!--                      chips-->
-<!--                      :item-text="getCurrentNameString"-->
-<!--                      filled-->
-<!--                      return-object-->
-<!--                      dense-->
-<!--                      :label="$t('IP')"-->
-<!--                    >-->
-<!--                      &lt;!&ndash; @template Use this slot for the selected Labels inside V-Autocomplete &ndash;&gt;-->
-<!--                      <template v-slot:selection="data">-->
-<!--                        <v-chip  dark :color="data.item.colour"> {{ getName(data.item) }} </v-chip>-->
-<!--                      </template>-->
-<!--                      &lt;!&ndash; @template Use this slot for the expanded List when V-Autocomplete is selected &ndash;&gt;-->
-<!--                      <template v-slot:item="{ item, on, attrs }">-->
-<!--                        <v-list-item v-on="on" v-bind="attrs" #default="{ active }">-->
-<!--                          &lt;!&ndash;          Enables CheckBox usage to select multiple labels&ndash;&gt;-->
-<!--                          <v-list-item-action>-->
-<!--                            <v-checkbox :color="item.colour" :input-value="active"> </v-checkbox>-->
-<!--                          </v-list-item-action>-->
-<!--                          <v-list-item-content>-->
-<!--                            <v-list-item-title>-->
-<!--                              <v-chip dark :color="item.colour"> {{ getName(item) }} </v-chip>-->
-<!--                            </v-list-item-title>-->
-<!--                          </v-list-item-content>-->
-<!--                        </v-list-item>-->
-<!--                      </template>-->
-<!--                      <template v-slot:append-item>-->
-<!--                        <v-list-item>-->
-<!--                          <span class="subheading">{{ $t('newip') }}</span>-->
-<!--                          <v-spacer></v-spacer>-->
-<!--                          <v-dialog v-model="dialogIP" max-width="40%">-->
-<!--                            <template v-slot:activator="{ on, attrs }">-->
-<!--                              <v-btn-->
-<!--                                color="secondary"-->
-<!--                                label-->
-<!--                                small-->
-<!--                                v-bind="attrs"-->
-<!--                                v-on="on"-->
-<!--                              >-->
-<!--                                <v-icon>-->
-<!--                                  mdi-plus-->
-<!--                                </v-icon>-->
-<!--                              </v-btn>-->
-<!--                            </template>-->
-<!--                            <v-card>-->
-<!--                              <v-card-title class="justify-center">-->
-<!--                                {{ $t('newip') }}-->
-<!--                              </v-card-title>-->
-<!--                              <v-row><v-col>-->
-<!--                                <v-spacer></v-spacer>-->
-<!--                              </v-col>-->
-<!--                                <v-col>-->
-<!--                                  <v-text-field style="margin-right: 12px;margin-left: 12px;-->
-<!--                                  align-self: center" :label="$t('enterip')" clearable></v-text-field>-->
-<!--                                </v-col>-->
-<!--                                <v-col><v-spacer></v-spacer></v-col>-->
-<!--                              </v-row>-->
-<!--                              <v-divider></v-divider>-->
-<!--                              <v-card-actions>-->
-<!--                                <v-spacer></v-spacer>-->
-<!--                                <v-btn-->
-<!--                                  color="primary"-->
-<!--                                  text-->
-<!--                                  @click="dialogIP = false"-->
-<!--                                >-->
-<!--                                  {{ $t('createip') }}-->
-<!--                                </v-btn>-->
-<!--                              </v-card-actions>-->
-<!--                            </v-card>-->
-<!--                          </v-dialog>-->
-<!--                        </v-list-item>-->
-<!--                      </template>-->
-<!--                    </v-autocomplete>-->
+                    <v-text-field :label="$t('IP')" filled disabled :value="selectedRoom.ipAddress"></v-text-field>
                   </v-container>
                 </v-col>
-                <v-col class="col-lg-4">
+                <v-col class="col-lg-4 col-12">
                   <v-container>
                     <!-- AutoComplete SearchBar with Chips and slotted templates -->
                     <v-autocomplete
@@ -183,40 +81,11 @@
                       dense
                       :label="$t('MACaddress')"
                     >
-<!--                      &lt;!&ndash; @template Use this slot for the selected Labels inside V-Autocomplete &ndash;&gt;-->
-<!--                      <template v-slot:selection="data">-->
-<!--                        <v-chip  dark> {{ data }} </v-chip>-->
-<!--                      </template>-->
-<!--                      &lt;!&ndash; @template Use this slot for the expanded List when V-Autocomplete is selected &ndash;&gt;-->
-<!--                      <template v-slot:item="{ item, on, attrs }">-->
-<!--                        <v-list-item v-on="on" v-bind="attrs" #default="{ active }">-->
-<!--                          &lt;!&ndash;          Enables CheckBox usage to select multiple labels&ndash;&gt;-->
-<!--                          <v-list-item-action>-->
-<!--                            <v-checkbox :input-value="active"> </v-checkbox>-->
-<!--                          </v-list-item-action>-->
-<!--                          <v-list-item-content>-->
-<!--                            <v-list-item-title>-->
-<!--                              <v-chip> {{ data }} </v-chip>-->
-<!--                            </v-list-item-title>-->
-<!--                          </v-list-item-content>-->
-<!--                        </v-list-item>-->
-<!--                      </template>-->
                     </v-autocomplete>
                   </v-container>
                 </v-col>
               </v-row>
               <v-row class="ml-5">
-                <v-col>
-                  <!-- input field for shelfname-->
-                  <!-- validates if input is required-->
-                  <v-text-field
-                    :label="$t('Shelfname')"
-                    clearable
-                    v-model="Shelf.Shelfname"
-                    :rules="rulesName"
-                  >
-                  </v-text-field>
-                </v-col>
                 <v-col>
                 <v-spacer></v-spacer>
                 </v-col>
@@ -248,7 +117,7 @@
               </v-row>
               <v-row>
                 <v-col>
-                  <!-- @v-slider for the amounts of rows in the self-->
+                  <!-- @v-slider for the amounts of columns in the self-->
             <v-slider
               v-model="slider"
               thumb-label="always"
@@ -275,6 +144,7 @@
               <v-row v-if="isMobile">
                 <v-col>
                 <v-slider
+                  @mouseup="setSelectedLeds"
                   :label="$t('rows')"
                   thumb-label="always"
                   v-model="rowcounter"
@@ -320,7 +190,7 @@
                 <v-col cols="1" v-if="!isMobile">
                   <!-- @v-slider for the amounts of rows in the self-->
                   <v-slider
-
+                  @mouseup="setSelectedLeds()"
                   :label="$t('rows')"
                   thumb-label="always"
                   v-model="rowcounter"
@@ -361,7 +231,7 @@
                   >{{ $t('deleterow') }}</v-btn>
                 </v-col>
                 <v-col>
-                  <v-btn @click ="submit"
+                  <v-btn @click ="createShelf"
                          elevation="2"
                          style="margin-left:35px"
                   >{{ $t('submit') }}</v-btn>
@@ -395,9 +265,9 @@
 import RoomsDataService from '../services/roomsDataService'
 import ShelfDirectDataService from '../services/shelfDirectDataService'
 import ShelfDataService from '../services/shelvesDataService'
-import { Item } from '../types/index'
 import Vue from 'vue'
-import Room from '../components/Room'
+import Room from '../components/Room.vue'
+import i18n from '@/i18n'
 
 export default Vue.extend({
   components: { Room },
@@ -412,7 +282,6 @@ export default Vue.extend({
       namede: [String],
       nameen: [String]
     },
-    rulesName: [v => !!v || 'This field is required'],
     rules: [v => !!v || 'This field is required',
       v => /^\d{1,2}$/.test(v) || 'This field only accept numbers'],
     roomsize: Number,
@@ -451,28 +320,35 @@ export default Vue.extend({
     selectedRoom (newRoom: any) {
       this.getMacAdresses(newRoom)
     },
+    /**
+     * gets MAC Adress for this Room
+     */
     selectedMacAdress () {
       const allLeds = Array.from(Array(100).keys())
-      console.log(this.selectedMacAdress)
       const payload = {
         Mac_Address: '3C:71:BF:AA:AC:08',
         LEDs: allLeds,
         Color: '#FF00FF'
       }
-      console.log(payload)
-      ShelfDirectDataService.setLEDsWObject(payload)
+      ShelfDirectDataService.setLEDsWObject(payload, this.selectedRoom.ipAddress)
     },
+    /**
+     * If slider has changed Light Up Shelf on selected Positions
+     */
     slider () {
-      this.resetShelfLeds()
-      const allLeds = Array.from(Array(this.slider * this.rowcounter).keys())
-      const payload = {
-        Mac_Address: '3C:71:BF:AA:AC:08',
-        LEDs: allLeds,
-        Color: '#FF00FF'
-      }
-      console.log(payload)
-      ShelfDirectDataService.setLEDsWObject(payload)
+      this.resetShelfLeds().then((result :any) => {
+        const allLeds = Array.from(Array(this.slider * this.rowcounter).keys())
+        const payload = {
+          Mac_Address: '3C:71:BF:AA:AC:08',
+          LEDs: allLeds,
+          Color: '#FF00FF'
+        }
+        ShelfDirectDataService.setLEDsWObject(payload, this.selectedRoom.ipAddress)
+      })
     },
+    /**
+     * If row has changed reset Light -> Light Up Shelf on selected Positions
+     */
     rowcounter () {
       this.resetShelfLeds().then(result => {
         const allLeds = Array.from(Array(this.slider * this.rowcounter).keys())
@@ -481,128 +357,113 @@ export default Vue.extend({
           LEDs: allLeds,
           Color: '#FF00FF'
         }
-        console.log(payload)
-        ShelfDirectDataService.setLEDsWObject(payload)
+        ShelfDirectDataService.setLEDsWObject(payload, this.selectedRoom.ipAddress)
       })
     }
   },
   methods: {
+    getName (item: any) {
+      return item.name[i18n.locale]
+    },
+    /**
+     * Sets selected LEDs (shown as Grid) in Color
+     */
+    setSelectedLeds () {
+      this.resetShelfLeds().then((result :any) => {
+        const allLeds = Array.from(Array(this.slider * this.rowcounter).keys())
+        const payload = {
+          Mac_Address: '3C:71:BF:AA:AC:08',
+          LEDs: allLeds,
+          Color: '#FF00FF'
+        }
+        ShelfDirectDataService.setLEDsWObject(payload, this.selectedRoom.ipAddress)
+      })
+    },
+    /**
+     * Turns Off all Leds
+     */
     async resetShelfLeds  () {
-      console.log('TEST')
       const allLeds = Array.from(Array(80).keys())
       const payload = {
         Mac_Address: '3C:71:BF:AA:AC:08',
         LEDs: allLeds
       }
-      console.log(payload)
-      return ShelfDirectDataService.unstLEDsWObject(payload)
+      return ShelfDirectDataService.unsetLEDsWObject(payload, this.selectedRoom.ipAddress)
     },
     getMacAdresses (room) {
       /**
        * getMacAdresses needs to connect to IP from room.ipAddress
+       *
       */
-      ShelfDirectDataService.getMacAdresses() // getAllRooms
+      ShelfDirectDataService.getMacAddresses(this.selectedRoom.ipAddress) // getAllRooms via Embedded
         .then(response => {
           this.allMacAdresses = response.data
-          console.log('ALLMACADRESSES')
-          console.log(this.allMacAdresses)
         })
         .catch(e => {
           // If Exception, write it on Console
-          console.log(e)
+          console.error(e)
         })
     },
-    getName (item) {
-      return item.name[this.$i18n.locale]
-    },
-    /**
-     * creates a Room with a name and ipAddress
-     */
-    createRoom () {
-      const name: Room = {
-        name: { en: this.Shelf.Roomname, de: this.Shelf.Roomname },
-        ipAddress: this.ipAddress
-      }
-      RoomsDataService.create(name)
-        .then(response => {
-          console.log(response)
-        })
-        .catch(e => {
-          console.log(e)
-        })
-      console.log(name)
-      this.dialogRoom = false
-    },
+    /** Creates Shelf */
     createShelf () {
       var highestNum = 0
       /**
-       * Gets highest Number for new unique Number
+       * Gets highest Number for new unique Number should be replaced with Counter in Backend
        */
       ShelfDataService.getAll().then(response => {
-        response.forEach(value => {
+        response.data.forEach(value => {
           if (value.number > highestNum) {
-            highestNum = value.number
+            highestNum = value.number + 1
           }
-          const newShelf = {
-            Shelfnumber: highestNum,
-            Mac_Address: this.selectedMacAdress,
-            Position: []
-          }
-          ShelfDirectDataService.createShelf(newShelf).then(response => {
-            /**
+        })
+        const newShelf = {
+          ShelfNumber: highestNum,
+          Mac_Address: this.selectedMacAdress,
+          Positions: []
+        }
+        ShelfDirectDataService.createShelf(newShelf, this.selectedRoom.ipAddress).then(response => {
+          /**
              * Create Shelf in Backend
              */
-            const shelf = {
-              number: highestNum,
-              roomId: this.selectedRoom._id
-            }
-            ShelfDataService.create()
-            /**
-             * Create first Position with Row-Length in LEDs   Used for displaying Exact Grid later on in Assign_items.
-             */
+          const shelf = {
+            number: highestNum,
+            roomId: this.selectedRoom._id
+          }
+          ShelfDataService.create(shelf)
+
+          /**
+           * Create first Position with Row-Length in LEDs   Used for displaying Exact Grid later on in Assign_items.
+           * High-Led Number used because LED cannot be "used" twice
+           * BestPractice: Save Number in Backend, not implemented yet.
+           */
+          const shelfPosition = {
+            ShelfNumber: highestNum,
+            PositionId: 0,
+            LEDs: [255 - this.slider]
+          }
+          ShelfDirectDataService.createPosition(shelfPosition, this.selectedRoom.ipAddress)
+        }).then(response => {
+          /**
+           * Create each Position in Embedded
+           * */
+          const totalPositions = this.slider * this.rowcounter
+          for (let i = 0; i < totalPositions; i++) {
             const shelfPosition = {
               ShelfNumber: highestNum,
-              PositionId: 0,
-              LEDs: [this.slider]
+              PositionId: i + 1,
+              LEDs: [i]
             }
-            ShelfDirectDataService.createPosition(shelfPosition)
-          }).then(response => {
-            const totalPositions = this.slider * this.rowcounter
-            for (let i = 0; i < totalPositions; i++) {
-              console.log('createPosition' + i.toString())
-              const shelfPosition = {
-                ShelfNumber: highestNum,
-                PositionId: i + 1,
-                LEDs: [i]
-              }
-              ShelfDirectDataService.createPosition(shelfPosition)
-            }
-            console.log('ShelfSetupComplete!')
-            // todo success Message
-          })
-            .catch(err => {
+            ShelfDirectDataService.createPosition(shelfPosition, this.selectedRoom.ipAddress).catch(err => {
               console.error(err)
-            // todo DisplayErrorMessage for example via Alert
             })
+          }
+        }).then(response => {
+          this.submit()
         })
+          .catch(err => {
+            console.error(err)
+          })
       })
-      /**
-       * Creates an Room from the inputfield
-       * @Room interface from types/index.ts
-       */
-      const name: Room = {
-        name: { en: this.Shelf.Roomname, de: this.Shelf.Roomname },
-        ipAddress: this.ipAddress
-      }
-      RoomsDataService.create(name)
-        .then(response => {
-          console.log(response)
-        })
-        .catch(e => {
-          console.log(e)
-        })
-      console.log(name)
-      this.dialogRoom = false
     },
     myEventHandler (e) {
       this.onResize()
@@ -612,9 +473,6 @@ export default Vue.extend({
      */
     onResize () {
       this.windowSize = { x: window.innerWidth, y: window.innerHeight }
-      console.log(this.windowSize)
-      console.log(window.innerWidth)
-      console.log(window.innerHeight)
     },
     /**
      * decreases the size of the columns of the shelf
@@ -672,7 +530,7 @@ export default Vue.extend({
       this.Shelf.Shelfname = ''
       this.selectedRoom = ''
       this.selectedIP = ''
-      this.selectedMacAdress = ''
+      this.selectedMacAdress = '3C:71:BF:AA:73:F0'
       this.openSnackbar()
     },
     /**
@@ -711,31 +569,9 @@ export default Vue.extend({
      * connects with the RoomsDataService and returns all Rooms
      */
     RoomsDataService.getAll().then(response => {
-      console.log('Finished')
       this.completeRooms = response.data
-      console.log(this.completeRooms)
     })
     this.onResize()
-    // RoomsDataService.getAll() // getAllRooms
-    //   .then(response => {
-    //     console.log(response.data)
-    //     var counter = 0
-    //     for (var i = 0; i < response.data.length; i++) {
-    //       if ((response.data[i].name.de.length !== 0) &&
-    //         (response.data[i].name.en.length !== 0) &&
-    //         !(this.rooms.namede.includes(response.data[i].name.de)) &&
-    //         !(this.rooms.nameen.includes(response.data[i].name.en))) {
-    //         this.rooms.namede[i] = response.data[i].name.de
-    //         this.rooms.nameen[i] = response.data[i].name.en
-    //         this.roomsize = counter
-    //         counter++
-    //       }
-    //     }
-    //   })
-    //   .catch(e => {
-    //     // If Exception, write it on Console
-    //     console.log(e)
-    //   })
   },
   /**
    * gets the current name as string connected with i18n tag
@@ -745,7 +581,6 @@ export default Vue.extend({
      * Checks if Screensize is mobile
      */
     isMobile () {
-      console.log(window.innerWidth)
       if (window.innerWidth <= 760) {
         return true
       } else {
@@ -759,7 +594,6 @@ export default Vue.extend({
      * gets the size of the box of the shelf depending of the windowsize
      */
     sizeOfBox () {
-      console.log(this.windowSize.x)
       const ausgangswert = 50
       return (ausgangswert / 1920) * this.windowSize.x // <!--  width = Ursprungsgröße (50) / 1920 (Standardgröße) -->
     },
@@ -768,7 +602,7 @@ export default Vue.extend({
      */
     disableAddRowButton () {
       if (this.rowcounter > 9) {
-        return this.addRowButton
+        return (this as any).addRowButton
       }
       return !this.addRowButton
     },

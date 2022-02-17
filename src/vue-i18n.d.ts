@@ -1,10 +1,10 @@
 /**
  * global type definitions
- * using the typescript interface, you can define the i18n resources that is type-safed!
+ * using the typescript interface, you can define the i18n resources that is type-saved!
  */
 
 /**
- * you need to import the some interfaces
+ * you need to import the interfaces
  */
 import {
   DefineLocaleMessage,

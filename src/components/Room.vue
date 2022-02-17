@@ -38,7 +38,7 @@
           text
           @click="createRoom"
         >
-          {{ $t('addnew') }}
+          {{ $t('add new') }}
         </v-btn>
       </v-card-actions>
         </v-col>
@@ -49,19 +49,13 @@
 
 <script lang="ts">
 import RoomsDataService from '../services/roomsDataService'
-import { Room } from '../types/index'
+import { Room } from '@/types'
 import Vue from 'vue'
 export default Vue.extend({
   name: 'Room',
   data () {
     return {
       roomName: '',
-      ipAddress: ''
-    }
-  },
-  mounted () {
-    const Room = {
-      name: { de: 'A20.86.8', en: 'A20.86,3' },
       ipAddress: '192.168.0.1'
     }
   },
@@ -70,20 +64,26 @@ export default Vue.extend({
      * creates a Room and passes the response to DataService
      */
     createRoom () {
-      const name: Room = {
-        name: { en: this.roomName, de: this.roomName },
-        ipAddress: this.ipAddress
+      if (this.validateIPAddress()) {
+        const newRoom: Room = {
+          name: { de: this.roomName, en: this.roomName },
+          ipAddress: this.ipAddress
+        }
+
+        RoomsDataService.create(newRoom)
+          .catch(e => {
+            console.error(e)
+          })
+        this.roomName = ''
+        this.ipAddress = ''
       }
-      RoomsDataService.create(name)
-        .then(response => {
-          console.log(response)
-        })
-        .catch(e => {
-          console.log(e)
-        })
-      console.log(name)
-      this.roomName = ''
-      this.ipAddress = ''
+    },
+    validateIPAddress () {
+      if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(this.ipAddress)) {
+        return true
+      }
+      alert('You have entered an invalid IP address!')
+      return false
     }
   }
 })
@@ -94,7 +94,7 @@ export default Vue.extend({
     "room": "Room",
     "add": "add",
     "new": "new",
-    "addnew": "add new Room",
+    "add new": "add new Room",
     "enter": "Enter Room Name",
     "enter1": "Enter IP-Address"
   },
@@ -102,7 +102,7 @@ export default Vue.extend({
     "room": "Raum",
     "add": "hinzufügen",
     "new": "Neuer",
-    "addnew": "neuen Raum hinzufügen",
+    "add new": "neuen Raum hinzufügen",
     "enter": "Raumname",
     "enter1": "IP-Adresse eingeben"
   }

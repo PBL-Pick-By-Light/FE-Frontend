@@ -1,217 +1,237 @@
 <template>
   <div>
+<!--    Dialog for Displaying Assign Dialog-->
     <v-dialog         v-model="dialog"
-                      width="500">
-      <v-card>
-        {{ NameOfPosition }}
+                      width="600">
+      <v-card   width="800">
+<!--        Reusing Searchbar Component-->
+        <search-bar></search-bar>
+<!--        List for Displaying searched Items in Dialog-->
+        <v-list
+          subheader
+          two-line
+        >
+          <v-subheader inset>Items</v-subheader>
+
+          <v-list-item
+            v-for="item in items"
+            :key="item.id"
+            @click="assignItem(item)"
+          >
+            <v-list-item-avatar>
+              <v-icon
+                class="grey lighten-1"
+                dark
+              >
+                mdi-screw-round-top
+              </v-icon>
+            </v-list-item-avatar>
+
+            <v-list-item-content>
+              <v-list-item-title v-text="item.name.de"></v-list-item-title>
+
+              <v-list-item-subtitle v-text="item.description.de"></v-list-item-subtitle>
+            </v-list-item-content>
+            Assign
+            <v-list-item-action class="">
+<!--              Button isn't used because whole Item can be Clicked-->
+              <v-btn class="" icon>
+                <v-icon color="green lighten-1">mdi-plus-circle-outline</v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
+      </v-card>
+    </v-dialog>
+<!--    Dialog for Displaying Item-Dialog-->
+    <v-dialog         v-model="itemDialog"
+                      width="600">
+      <v-card   width="800" height="300">
+        <!--        Reusing Searchbar Component-->
+        <!--        List for Displaying searched Items in Dialog-->
+        <v-card-text>
+          <v-row class="mt-3">
+            <!-- Currently just a dummy picture, later from web/none/self taken -->
+            <v-img
+              :src="require('@/assets/dummyPics/m5.jpg')"
+              class="my-3"
+              contain
+              height="200"
+            />
+            <h2>
+              Placeholder
+            </h2>
+          </v-row>
+          <v-row>
+            <h3>
+              Placeholder
+            </h3>
+          </v-row>
+
+        </v-card-text>
       </v-card>
     </v-dialog>
     <v-container>
-    <v-card>
-    <v-row>
+<!--    Selecting Shelf Box-->
+    <v-card class="mt-4">
+    <v-row >
       <v-col cols="8" offset="2">
+        <!-- @v-autocomplete to select a shelf from shelves-->
       <v-autocomplete
         chips
+        label="Select Shelf"
+        placeholder="Select Shelf"
+        dense
+        return-object
         filled
         v-model="selectedShelf"
         :items="shelves"
         item-text="number"
       >
-        <div slot="append-item">
-          <v-btn text block>{{"Create Shelf"}}</v-btn>
-        </div>
+        <template v-slot:item="{ item, on, attrs }">
+          <v-list-item v-on="on" v-bind="attrs" #default="{ active }">
+            <!--          Enables CheckBox usage to select multiple labels-->
+            <v-list-item-action>
+              <v-checkbox :color="item.colour" :input-value="active"> </v-checkbox>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>
+                <v-row>
+                  <v-col><v-chip dark> {{ item.number }} </v-chip></v-col>
+                  <v-col><v-btn color="red" @click="deleteShelf(item)">Delete</v-btn> </v-col>
+                </v-row>
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </template>
       </v-autocomplete>
       </v-col>
-<!--      <v-combobox label="Select Shelf" clearable v-model="selectedShelf">-->
-<!--        <template v-slot:no-data>-->
-<!--          <v-list-item-group>-->
-<!--            <v-list-item v-for="(shelf) in shelves" :key="shelf">-->
-<!--              {{shelf.number}}-->
-<!--            </v-list-item>-->
-<!--            <v-list-item>-->
-<!--              <span class="subheading">New Room</span>-->
-<!--              <v-spacer></v-spacer>-->
-<!--              <v-dialog v-model="dialogRoom" max-width="40%">-->
-<!--                <template v-slot:activator="{ on, attrs }">-->
-<!--                  <v-btn-->
-<!--                    color="secondary"-->
-<!--                    label-->
-<!--                    small-->
-<!--                    v-bind="attrs"-->
-<!--                    v-on="on"-->
-<!--                  >-->
-<!--                    <v-icon>-->
-<!--                      mdi-plus-->
-<!--                    </v-icon>-->
-<!--                  </v-btn>-->
-<!--                </template>-->
-<!--                <v-card>-->
-<!--                  <v-card-title class="justify-center">-->
-<!--                    New Room-->
-<!--                  </v-card-title>-->
-<!--                  <v-row><v-col>-->
-<!--                    <v-spacer></v-spacer>-->
-<!--                  </v-col>-->
-<!--                    <v-col>-->
-<!--                      <v-text-field style="margin-right: 12px;margin-left: 12px;align-self: center" label="Enter Room Number"></v-text-field>-->
-<!--                    </v-col>-->
-<!--                    <v-col><v-spacer></v-spacer></v-col>-->
-<!--                  </v-row>-->
-<!--                  <v-divider></v-divider>-->
-<!--                  <v-card-actions>-->
-<!--                    <v-spacer></v-spacer>-->
-<!--                    <v-btn-->
-<!--                      color="primary"-->
-<!--                      text-->
-<!--                      @click="dialogRoom = false"-->
-<!--                    >-->
-<!--                      add new Room-->
-<!--                    </v-btn>-->
-<!--                  </v-card-actions>-->
-<!--                </v-card>-->
-<!--              </v-dialog>-->
-<!--            </v-list-item>-->
-<!--          </v-list-item-group>-->
-<!--        </template>-->
-<!--      </v-combobox>-->
+
     </v-row>
-<div class="row">
-<div class="col-3">
-  <h3>Draggable 1</h3>
-  <draggable class="list-group" :list="list1" group="people" @change="log">
-    <div
-      class="list-group-item"
-      v-for="(element, index) in list1"
-      :key="element.name"
-    >
-      {{ element.name }} {{ index }}
-    </div>
-  </draggable>
-</div>
-
-<div class="col-3">
-  <h3>Draggable 2</h3>
-  <draggable class="list-group" :list="list2" group="people" @change="log">
-    <div
-      class="list-group-item"
-      v-for="(element, index) in list2"
-      :key="element.name"
-    >
-      {{ element.name }} {{ index }}
-    </div>
-  </draggable>
-</div>
-  <div>
-  </div>
-</div>
-    <v-container>
-      <v-row align="stretch" v-for="x in 5"
-             :key="x" class="ml-1">
-
+<!--    Grid for displaying loaded Positions -->
+    <v-container class="mt-3">
+      <v-row class="d-flex  ml-1 align-center justify-center" v-for="y in this.rowCount"
+             :key="y">
           <v-col
-            class="ma-0 pa-0"
-            v-for="n in 10"
-            :key="n"
+            v-for="x in rowLength"
+            :key="x"
             cols="auto"
             sm="1">
-<!--            <v-sheet-->
-<!--              color="grey"-->
-<!--              elevation="24"-->
-<!--              height="20"-->
-<!--              :width="sizeOfBox"-->
-<!--            ></v-sheet>-->
-            <v-card class="mt-0 mb-0 test" v-if="(n<5 && n>3 && x!=3)" height="60" @click="assignNameToPosition('tes123t')">
-              {{ n }} Test1
+
+            <v-card :height="sizeOfBox" :width="sizeOfBox" class="d-flex align-center justify-center" @click="setSelectedPosition(x,y)" v-if="!occupied(x,y)">
+              <div class="my-2">
+                <v-btn
+                  color="secondary"
+                  fab
+                  x-small
+                  dark
+                >
+                  <v-icon>mdi-plus-box</v-icon>
+                </v-btn>
+              </div>
             </v-card>
-            <v-card class="mt-0 mb-0" flat v-if="(n<5 && n>3 && x==3)" height="80" @click="assignNameToPosition('tes123t')">
-              {{ n }} Test2
-            </v-card>
-            <v-card class="mt-5" v-if="((n>=5 || n<=3) && n != 10)" height="40" @click="assignNameToPosition('tes123t')">
-              {{ n }}
-            </v-card>
-            <v-card class="mt-0 test" v-if="(n ===10)" height="80" @click="assignNameToPosition('tes123t')">
-              {{ n }}
+            <v-card :height="sizeOfBox" :width="sizeOfBox" class="d-flex align-center justify-center" color="#FF6600" v-if="occupied(x,y)" @click="deleteItemFromPosition(x,y)">
+              <div class="my-2">
+                <v-btn
+                  color="secondary"
+                  fab
+                  dark
+                  x-small
+                >
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </div>
             </v-card>
           </v-col>
       </v-row>
     </v-container>
-    <v-container>
-    <v-row>
-      <draggable class="v-col"></draggable>
-      <v-col v-for="(item, index) in this.row1" :key="index" >
-        <v-card :width="item.width" :height="item.height">
-          <draggable :v-model="test" @change="log" :move="move()" v-bind="dragOptionsChips" :empty-insert-threshold="100">
-            <v-card :empty-insert-threshold="100" :width="x[index][0].width" :height="x[index][0].height"> {{x[index][0].name}}    <v-btn x-small @click="login()">x</v-btn></v-card>
-<!--            <v-chip draggable :empty-insert-threshold="100">-->
-<!--              {{x[index][0].name}}-->
-<!--            </v-chip>-->
-          </draggable>
-<!--          <v-chip-group><v-chip draggable>Test</v-chip></v-chip-group>-->
-        </v-card>
-      </v-col>
-    </v-row>
-    </v-container>
+
     </v-card>
     </v-container>
+
   </div>
 </template>
 <script lang="ts">
 /* eslint-disable brace-style */
-import draggable from 'vuedraggable'
 import shelvesDataService from '@/services/shelvesDataService'
-import shelfDirectDataService from '@/services/shelfDirectDataService'
 import Vue from 'vue'
-import { Position } from '@/types'
-
+import { Item, Position, BackendPosition, Label } from '@/types'
+import SearchBar from '@/components/SearchBar.vue'
+import ItemDataService from '@/services/itemDataService'
+import LabelDataService from '@/services/labelDataService'
+import PositionDataService from '@/services/positionDataService'
+import ShelfDirectDataService from '@/services/shelfDirectDataService'
+import RoomsDataService from '@/services/roomsDataService'
 export default Vue.extend({
   name: 'ItemToShelf',
   components: {
-    draggable
+    SearchBar
   },
   data () {
     return {
       rowLength: 0,
-      selectedShelf: 0,
+      occupiedPositions: null,
+      rowCount: 0,
+      itemDialog: false,
+      selectedShelf: null,
       shelves: [],
+      items: [],
+      windowSize: {
+        x: 0,
+        y: 0
+      },
+      allPositionsFromShelf: [],
+      selectedRoomFromShelfIP: '',
+      quantity: 0,
+      itemsall: [],
+      selectedPosition: { x: 0, y: 0 },
       shelfPositions: [] as Position[],
       NameOfPosition: '',
-      dialog: false,
-      row1: [{ width: 100, height: 100 }, { width: 150, height: 100 }, { width: 300, height: 50 }],
-      test: [],
-      list: [] as any,
-      x: [[{ name: 'test412', width: 80, height: 50 }],
-        [{ name: 'test33', width: 50, height: 30 }],
-        [{ name: 'test44', width: 140, height: 50 }]],
-      list1: [
-        { name: 'John', id: 1 },
-        { name: 'Joao', id: 2 },
-        { name: 'Jean', id: 3 },
-        { name: 'Gerard', id: 4 }
-      ],
-      list2: [
-        { name: 'Juan', id: 5 },
-        { name: 'Edgard', id: 6 },
-        { name: 'Johnson', id: 7 }
-      ]
+      dialog: false
     }
   },
   watch: {
+    dialog () {
+      this.updateShelf()
+    },
+    /**
+     * Checks if SelectedLabels are changed
+     */
+    '$store.state.currentSelectedLabels' () {
+      this.fetchItemsFromLabels(this.$store.state.currentSelectedLabels)
+    },
+    /**
+     * If Shelf selected fetch all Positions
+     * First fetch all Rooms to get IP-Address for PI from
+     */
     selectedShelf () {
-      shelfDirectDataService.getPositionsFromShelf(this.selectedShelf).then((response) => {
-        this.shelfPositions = response.data.Positions
-        /** RowLength from first Posiiton (Index0) */
-        this.rowLength = this.shelfPositions[0].LEDs[0]
-        this.shelfPositions.splice(0, 1)
-        this.shelfPositions.forEach(value => {
-          console.log(value)
-          if (value.LEDs[0] - value.LEDs[value.LEDs.length - 1] === this.rowLength) {
-            //
-          }
-        })
-      })
+      this.updateShelf()
     }
   },
+  /**
+   * creates an Event Listener to handle windowsize(resize)
+   */
+  created () {
+    window.addEventListener('resize', this.myEventHandler)
+  },
+  /**
+   * destroys an Event Listener to handle windowsize(resize)
+   */
+  destroyed () {
+    window.removeEventListener('resize', this.myEventHandler)
+  },
   computed: {
+    /**
+     * gets the size of the box of the shelf depending of the windowsize
+     */
+    sizeOfBox () {
+      const ausgangswert = 80
+      if (this.windowSize.x < 500) return 60
+      return (ausgangswert / 1920) * (this.windowSize.x) // <!--  width = Ursprungsgröße (50) / 1920 (Standardgröße) -->
+    },
+    /**
+     * Settings for the draggable Objects
+     */
     dragOptionsChips () {
       return {
         animation: 200,
@@ -228,57 +248,211 @@ export default Vue.extend({
      */
     shelvesDataService.getAll().then(response => {
       this.shelves = response.data
-      console.log(response.data)
     })
+    /**
+     * Gets current Screen-Size
+     */
+    this.onResize()
   },
   methods: {
-    // Maybe https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-    move: function (value:any) {
-      console.log(value)
+    /**
+     * @param Shelf which should be deleted from Embedded AND Backend
+     * */
+    deleteShelf (shelf: any) {
+      RoomsDataService.getAll().then(rooms => {
+        const roomFromShelf = rooms.data.find(o => o._id === shelf.roomId)
+        const payload: any = { ShelfNumber: shelf.number }
+        ShelfDirectDataService.deleteShelf(payload, roomFromShelf.ipAddress).then(() => {
+          shelvesDataService.delete(shelf._id)
+        }).catch(err => {
+          console.error(err)
+        })
+      }).catch(err => {
+        console.error(err)
+      })
     },
-    assignNameToPosition (Name:string) {
-      console.log(Name)
-      this.dialog = true
-      this.NameOfPosition = Name
+    myEventHandler (e) {
+      this.onResize()
     },
-    // toggle: function (todo) {
-    //   todo.done = !todo.done
-    // },
-    // move: function (value) {
-    //   this.dragged = {
-    //     from: parseInt(value.from.id),
-    //     to: parseInt(value.to.id),
-    //     newIndex: value.draggedContext.futureIndex
-    //   }
-    // },
-    // change: function (value) {
-    //   if (value.removed) {
-    //     // insert
-    //     this.selectedSync.splice(this.dragged.to + this.dragged.newIndex, 0, this.selectedSync[this.dragged.from])
-    //     // delete
-    //     if (this.dragged.from < this.dragged.to) // LTR
-    //     { this.selectedSync.splice(this.dragged.from, 1) } else // RTL
-    //     { this.selectedSync.splice(this.dragged.from + 1, 1) }
-    //   }
-    // },
-    add: function () {
-      this.list.push({ name: 'Juan' })
+    /**
+     * sets the windowsize depending the innerhight/width
+     */
+    onResize () {
+      this.windowSize = { x: window.innerWidth, y: window.innerHeight }
     },
-    replace: function () {
-      this.list = [{ name: 'Edgard' }]
+
+    /**
+     * deletes Item with Coordinate x,y from Position
+     * @param x Coordinate of Item
+     * @param y Coordinate of Item
+     */
+
+    deleteItemFromPosition (x, y) {
+      const positionNumber = (y * this.rowLength) + x - this.rowLength
+      const numberArray = [positionNumber]
+      var filteredArray = this.occupiedPositions.filter(function (position) {
+        return numberArray.indexOf(position.number) > -1
+      })
+      PositionDataService.delete(filteredArray[0]._id).then(this.updateShelf).catch(err => {
+        console.error(err)
+      })
     },
-    clone: function (el : any) {
-      return {
-        name: el.name + 'cloned'
+    /**
+     * updates the Shelf after Position is filled with Item
+     */
+    updateShelf () {
+      RoomsDataService.getAll().then(rooms => {
+        const roomFromShelf = rooms.data.find(o => o._id === this.selectedShelf.roomId)
+        this.selectedRoomFromShelfIP = roomFromShelf.ipAddress
+        ShelfDirectDataService.getPositions(this.selectedShelf.number, roomFromShelf.ipAddress).then((result) => {
+          this.allPositionsFromShelf = JSON.parse(result.data).Positions
+          this.checkOccupiedPositions()
+          /**
+           * Get rowLength from PositionId 0
+           */
+          const pos0Value = this.allPositionsFromShelf.filter(value => {
+            return value.PositionId === 0
+          })
+          // Calculate RowLength based on 255 - LED should be saved in Backend in the Future
+          this.rowLength = 255 - pos0Value[0].LEDs[0]
+          // Calculate rowCount based on rowLength + PositionCount
+          this.rowCount = (this.allPositionsFromShelf.length - 1) / this.rowLength
+        })
+      })
+    },
+    /**
+     *  Returns true if the filtered Array filed
+     * @param x The Screen x Coordinate of the ShelfPosition
+     * @param y The Screen y Coordinate of the ShelfPosition
+     */
+    occupied (x, y) {
+      const positionNumber = (y * this.rowLength) + x - this.rowLength
+      const numberArray = [positionNumber]
+      var filteredArray = this.occupiedPositions.filter(function (position) {
+        return numberArray.indexOf(position.number) > -1
+      })
+      if (filteredArray.length > 0) return true
+      return false
+    },
+    /**
+     * checks the occupied Position in the selected Shelf
+     */
+    checkOccupiedPositions () {
+      PositionDataService.getAll().then(result => {
+        const shelfArray = [this.selectedShelf._id]
+        var filteredArray = result.data.filter(function (position) {
+          return shelfArray.indexOf(position.shelfId) > -1
+        })
+        this.occupiedPositions = filteredArray
+      })
+    },
+    /**
+     * Returns PositionNumber according to Selected Position
+     */
+    embeddedPositionNumber () {
+      return (this.selectedPosition.y * this.rowLength) + this.selectedPosition.x - this.rowLength
+    },
+    /**
+     * fills this.items with items which have all selected labels as Attributes
+     * @param labels
+     */
+    fetchItemsFromLabels (labels : Label[]) {
+      if (labels.length === 0) {
+        /** If no Labels are selected show all Items */
+        this.getAllItems()
+      } else {
+        this.items = []
+        const labelIDs : string[] = []
+        labels.forEach((value : Label) => {
+          labelIDs.push(value._id)
+        })
+        const search = { labelIds: labelIDs }
+        ItemDataService.findByLabel(search) // get all Items which have all Labels via Axios
+          .then(response => {
+            this.items = response.data
+          })
       }
     },
-    log: function (evt : any) {
-      window.console.log(evt)
+    /**
+     * MAIN FUNCTION
+     *  Assigns Item to Position in Backend
+     * @param item which should be Assigned to Position
+     */
+    assignItem (item:Item) {
+      /** Number = Position.id from Embedded Position */
+      const newPosition:BackendPosition = {
+        itemId: item.id,
+        number: this.embeddedPositionNumber(),
+        quantity: this.quantity + 1,
+        shelfId: this.selectedShelf._id
+      }
+      PositionDataService.create(newPosition).then(response => {
+        this.dialog = false
+      }).catch(err => {
+        console.error(err)
+      })
+    },
+    getAllItems () {
+      ItemDataService.getAll()
+        .then(response => {
+          // iterates through response and pushs it into new Array
+          for (var i = 0; i < response.data.length; i++) {
+            const result: Item = {
+              countable: false,
+              id: response.data[i]._id,
+              name: response.data[i].name,
+              description: response.data[i].description,
+              quantity: response.data[i].quantity
+            }
+            /**
+             * gets all Items according to selected Labels (SearchFunction)
+             */
+            LabelDataService.findLabelsByItemId(response.data[i]._id)
+              .then(response2 => {
+                result.labels = response2.data
+                this.items.push(result)
+                this.itemsall.push(result)
+              })
+              .catch(e => {
+                console.error(e)
+              })
+          }
+        })
+        .catch(e => {
+          // Falls Error, schreibe ihn in die Konsole
+          console.error(e.data)
+          console.error(e.status)
+          console.error(e.headers)
+        })
+    },
+    /** SelectedPosition gets updated by clicking on a Position on Website */
+    setSelectedPosition (x:number, y:number) {
+      this.selectedPosition.x = x
+      this.selectedPosition.y = y
+      this.dialog = true
+      this.items = []
+      this.getAllItems()
+      this.lightUpSelectedPosition()
+    },
+    /** Trigger Lights */
+    lightUpSelectedPosition () {
+      this.resetShelfLeds().then((result :any) => {
+        const payload = {
+          ShelfNumber: this.selectedShelf.number,
+          PositionId: this.embeddedPositionNumber(),
+          Color: '#FF00FF'
+        }
+        ShelfDirectDataService.turnOnPosition(payload, this.selectedRoomFromShelfIP)
+      })
+    },
+
+    /** Resets all Lights via Existing Positions */
+    async resetShelfLeds  () {
+      return ShelfDirectDataService.turnOffAllPositions(this.selectedShelf.number, this.selectedRoomFromShelfIP)
     }
   }
 })
 </script>
 
 <style >
- @import "../assets/myscss.css";
 </style>

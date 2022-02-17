@@ -1,3 +1,4 @@
+<!--View for the search site-->
 <template>
   <div>
     <SearchBar />
@@ -9,7 +10,6 @@
 
 <script lang="ts">
 import Vue from 'vue'
-// import HelloWorld from '../components/HelloWorld.vue'
 import Grid from '../components/Grid.vue'
 import ItemMenu from '../components/ItemMenu.vue'
 import SearchBar from '../components/SearchBar.vue'

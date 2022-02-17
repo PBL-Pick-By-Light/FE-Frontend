@@ -1,26 +1,24 @@
 
-// Setting up Tag with tagname and Optional(?) tagcolour
-import * as mongoose from 'mongoose'
-
+// Setting up Tag with tag-name and optional tag colour
 export interface Label {
   name: string,
   colour?: string,
-  _id?: mongoose.Types.ObjectId
+  _id?: string, // MongooseObjectId
 }
 
 // Setting up Item for easier use in any component
 export interface Item {
-  _id?: mongoose.Types.ObjectId,
-
+  _id?: string, // mongoose.Types.ObjectId,
+  id?: string, // mongoose.Types.ObjectId,
   name: any,
-  description: {en :string,
-    de :string },
+  description: any,
   bild?: string,
   quantity?: number,
   countable: boolean,
   position?: string,
   available?: boolean,
-  labelsIds: mongoose.Types.ObjectId[]
+  labelIds?: string[], // mongoose.Types.ObjectId[]
+  labels?: Label[]
 }
 
 export interface Items {
@@ -48,4 +46,16 @@ export interface Position {
 export interface Mac{
   mac: string
 }
-// todo type shelf
+export interface BackendPosition {
+  itemId: string,
+  number: number,
+  quantity: number
+  shelfId: string[]
+}
+
+export interface Language {
+  _id: string,
+  lang: string,
+  required: boolean,
+}
+

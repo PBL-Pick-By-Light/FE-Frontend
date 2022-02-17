@@ -1,32 +1,26 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import authDataService from '@/services/authDataService'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    auth: {
-      role: null,
-      loggedIn: false
-    },
-    // ausgewähltest Item (Pop-Up)
+    // Chosen Item (Pop-Up)
     selectedItem: null,
     // Items from the actual site
     searchedItems: null,
+    // ItemLightUpColor in Shelf
+    itemSearchColor: null,
+    // Flag if Search was successfully
+    itemAvailable: false,
     // The actually chosen items
-    currentSelectedLabels: []
+    currentSelectedLabels: [],
+    // Saves if drawer is Opened
+    drawerOpened: false
   },
   mutations: {
-    logout (state) {
-      state.auth.loggedIn = false
-      state.auth.role = null
-    }
   },
   actions: {
-    logout ({ commit }) {
-      commit('logout')
-    }
   },
   modules: {
   }
