@@ -29,5 +29,6 @@ Defines the area for the results of the item search.
   - __openItem__<br>Item gets added into VUEX State and triggers ItemMenu
 - __mounted__:
   - Items are loaded via the Item Data Service
-  
-[_back to wiki_](./)
+
+[_back to documentation_](../)
+

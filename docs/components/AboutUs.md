@@ -11,4 +11,5 @@ the About us page containing Legal Informations
 - `tempalte`: generates an item with the style 
 ## Scripts
 - `classes`: containing the fonts and names of the classes
-[_back to wiki_](./)
+  
+[_back to documentation_](../)

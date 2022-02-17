@@ -26,4 +26,5 @@ Creates a new custom Label with a custom color.
 - methods: 
   - ` sendLabel ()`: used to send all entered data to the server to create new label
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+

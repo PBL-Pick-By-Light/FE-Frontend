@@ -17,4 +17,5 @@ Provides a login field with username and password.
 ## Flowchart
 ![Flowchart for Login Page](../pictures/LoginPage/flowchart_login.png)
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+

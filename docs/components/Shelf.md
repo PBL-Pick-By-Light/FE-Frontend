@@ -51,10 +51,13 @@ Defines the Shelf which you can find under .../shelf
     - `getName (item: any)` : Used to get Name based on current language 
 - mounted: 
     - `RoomDataService.getAll()`: connects with the RoomsDataService and returns all Rooms
+
 - watch:
-    -`selectedRoom (newRoom: any)`:gets the current selected Room
-    -`selectedMacAdress ()`: gets all MAC addresses for this room
+  
+    - `selectedRoom (newRoom: any)`:gets the current selected Room
+    - `selectedMacAdress ()`: gets all MAC addresses for this room
     - `slider ()`:  used for light up shelf on selected positions
     - `rowcounter ()`: used for reset light/light up shelf on selected positions
 
 [_backtodocumentation_](../)
+

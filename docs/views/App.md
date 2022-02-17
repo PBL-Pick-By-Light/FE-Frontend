@@ -12,4 +12,5 @@ The starting point of the app.
 
 [`<Footer>`](../components/Footer.md) At the bottom of the page
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+

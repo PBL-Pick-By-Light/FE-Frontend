@@ -21,4 +21,5 @@ The item search bar with autocomplete feature and pill-boxing for the different 
 - __mounted__:
     - Via the LabelDataService the labels for the v-autocomplete are prepared
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+

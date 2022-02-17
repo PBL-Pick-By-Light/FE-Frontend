@@ -17,4 +17,5 @@ Displays Social Media Links and other helpful Links about the Project
 - `i18n` section -> Defines German/English text
 
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+
