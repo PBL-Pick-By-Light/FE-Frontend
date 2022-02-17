@@ -29,4 +29,5 @@ Assign Item to existing Shelves
 - `fetchItemsFromLabels (labels : Label[])`: fills this.items with items which have all selected labels as Attributes
 - `assignItem(item:Item)`: Assigns Item to Position in Backend
 
-  [_back to wiki_](./)
+[_back to documentation_](../)
+

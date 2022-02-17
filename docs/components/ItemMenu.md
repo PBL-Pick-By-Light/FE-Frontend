@@ -28,4 +28,5 @@ Triggers the Lights on the shelf to the corresponding Item.
 - `getItem(newItem: Item)`: Checks if getItem was triggered (Select Option was triggered in Grid)
 - `destroyed()`: turns off LED, by getting Id from item
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+

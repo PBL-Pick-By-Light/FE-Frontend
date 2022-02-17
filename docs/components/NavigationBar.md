@@ -29,4 +29,5 @@ Defines the NavigationBar at the top of the page.
 - mounted: 
     - Checks if there is a dark mode preference in browser or system
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+
