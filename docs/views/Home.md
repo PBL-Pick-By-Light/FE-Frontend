@@ -10,4 +10,5 @@ The main page with the search component in its center.
 
 [`<Footer>`](../components/Footer.md)
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+

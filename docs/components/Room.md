@@ -14,4 +14,5 @@ Creates a Roomname, which you can select in Shelf create. You can create a room 
 - mounted: 
     - `RoomDataService.create(Room)`: sends the created Room into the DataService
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+

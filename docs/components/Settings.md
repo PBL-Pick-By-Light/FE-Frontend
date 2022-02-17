@@ -32,4 +32,5 @@ __Administrator__<br>
 Example flow for the set_primary_color function
 ![settings_flow](../pictures/SettingsPage/settings_flow.png)
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+

@@ -14,4 +14,5 @@ Registration component with necessary fields to register a new user.
 ## Mockup of Register Page (created 12/02/2021)
 ![Mockup of Register Page](../pictures/RegisterPage/Mockup_RegisterPage.png)
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+

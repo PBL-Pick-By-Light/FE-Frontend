@@ -12,4 +12,5 @@ Creates a Mac-Address for the Shelf create Page. You can create Mac-Addresses un
 - methods:
     - `createMac ()`:creates a macAddress from the input field
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+
