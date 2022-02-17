@@ -5,10 +5,10 @@ WORKDIR /app
 # Copy all package*.json Files to the working directory
 COPY package*.json ./
 # Run npm install in the container shell
-RUN npm install
+RUN npm install --loglevel=error
 COPY ./ .
 # Run the npm build process in the container shell
-RUN npm run build
+RUN npm run build --loglevel=error
 
 # Download and use nginx in the production layer
 FROM nginx as production-stage
@@ -17,4 +17,4 @@ RUN mkdir /app
 # Copy the builded app from the build layer to the production layer
 COPY --from=build-stage /app/dist /app
 # Copy the nginx configuration file in the container
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY config/nginx.conf /etc/nginx/nginx.conf

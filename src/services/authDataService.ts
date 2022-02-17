@@ -12,8 +12,8 @@ class AuthDataService {
       }
     ).then(response => {
       if (response.data.token) {
-        console.log('loggedIn')
-        localStorage.setItem('user', JSON.stringify(response.data))
+        const newuser = { role: response.data.role, username: user.username, token: response.data.token }
+        localStorage.setItem('user', JSON.stringify(newuser))
       }
       return response
     })

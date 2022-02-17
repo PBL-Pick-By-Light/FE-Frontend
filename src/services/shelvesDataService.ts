@@ -1,9 +1,11 @@
 import http from '@/services/http-common'
 
 class ShelvesDataService {
-  // create a shelf by name
-  create (Name: any): Promise<any> {
-    return http.post(`/shelves/create/${Name}`)
+  // Create a Shelf
+  create (payload: any): Promise<any> {
+    console.log('SHELFCREATE')
+    console.log(payload)
+    return http.post('/shelves/create', payload)
   }
 
   // updates the shelf

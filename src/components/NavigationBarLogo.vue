@@ -2,7 +2,7 @@
   <div class="d-flex align-center">
 <!--    Link to the mainpage-->
     <router-link to="/">
-<!--      Link to the image and automatic sizing-->
+<!--      The image and automatic sizing-->
       <v-img
           src="../assets/THM_Logo.png"
           class="my-3"

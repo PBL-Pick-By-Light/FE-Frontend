@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import Home from '../views/Home.vue'
-import TestingPage from '@/views/TestingPage.vue'
 import addItem from '@/views/AddItem.vue'
 import Search from '../views/Search.vue'
 import Login from '@/views/Login.vue'
+import * as config from '../../config/config.json'
 
 Vue.use(VueRouter)
 
@@ -18,11 +18,6 @@ const routes: Array<RouteConfig> = [
     path: '/Search',
     name: 'Search',
     component: Search
-  },
-  {
-    path: '/test',
-    name: 'Test',
-    component: TestingPage
   },
   {
     path: '/addItem',
@@ -46,13 +41,8 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/MAC',
-    name: 'MACAdress',
-    component: () => import('../components/MACAdress.vue')
-  },
-  {
-    path: '/room',
-    name: 'Room',
-    component: () => import('../components/Room.vue')
+    name: 'MACAddress',
+    component: () => import('../components/MACAddress.vue')
   },
   {
     path: '/settings',
@@ -63,6 +53,11 @@ const routes: Array<RouteConfig> = [
     path: '/about',
     name: 'AboutUs',
     component: () => import('../components/AboutUs.vue')
+  },
+  {
+    path: '/itemToShelf',
+    name: 'ItemToShelf',
+    component: () => import('../components/ItemToShelf.vue')
   }
 
 ]
@@ -72,19 +67,30 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-
-router.beforeEach((to, from, next) => {
-  console.log(to.path)
-  const publicPages = ['/login', '/register']
-  const authRequired = !publicPages.includes(to.path)
-  const loggedIn = localStorage.getItem('user')
-  console.log(localStorage.getItem('user'))
-  // trying to access a restricted page + not logged in
-  // redirect to login page
-  if (authRequired && !loggedIn) {
-    next('/login')
-  } else {
-    next()
-  }
-})
+// Authentication, can be disabled in config.json
+if (!config.disableAuth) {
+  router.beforeEach((to, from, next) => {
+    const publicPages = ['/login', '/register']
+    const adminPages = ['/itemToShelf', '/MAC', '/addItem', '/shelf']
+    const authRequired = !publicPages.includes(to.path)
+    const adminRequired = adminPages.includes(to.path)
+    const loggedIn = localStorage.getItem('user')
+    let isAdmin = false
+    if (localStorage.getItem(('user'))) {
+      isAdmin = (JSON.parse(localStorage.getItem('user')!).role === 'admin')
+    }
+    // trying to access a restricted page + not logged in
+    // redirect to login page
+    if (authRequired && !loggedIn) {
+      next('/login')
+    } else {
+      // Trying to access a restricted page only for admins
+      if (adminRequired) {
+        if (isAdmin) {
+          next()
+        } else next('/')
+      } else next()
+    }
+  })
+}
 export default router

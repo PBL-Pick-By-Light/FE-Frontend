@@ -1,81 +1,49 @@
-<!-- Gridsystem für die Ergebnissanzeige der Suche für das Projekt Pick by light -->
+<!-- Gridsystem shows the result for the Project Pick by light -->
 
 <template>
- <div>
-   <!--Die Überschriften der Tabelle mit 5 items pro Seite -->
-   <v-data-table
-     v-if="!isMobile"
-     :headers="headers"
-     :items="items"
-     :items-per-page="10"
-     class="elevation-1"
-     :footer-props="footerprops"
-   > <!-- Diese Spalte gibt an ob ein Item verfügbar ist oder nicht -->
-     <template v-slot:item.verfuegbar="{ item }">
-       <v-icon
-         :color ="whichColor(item.verfuegbar)"
-       >{{isAvailable(item.verfuegbar)}}</v-icon>
-     </template>
-     <!-- Diese Spalte der Tabelle gibt an welche labels das Item besitzt -->
-     <template v-slot:item.labels="{ item }">
-       <v-chip
-         :color ="label.colour"
-         dark
-         v-for="label in item.labels"
-         :key="label._id"
-         @click="addlabelToSearch(label)"
-       >
-         {{ getLabelName(label) }}
-       </v-chip>
-     </template>
-     <!-- Hier kann man ein Item auswählen oder editieren -->
-     <template v-slot:item.actions="{ item }">
-       <v-icon
-         small
-         class="mr-2"
-         @click="openItem(item)"
-       >
-         mdi-pencil
-       </v-icon>
-     </template>
-   </v-data-table>
-<!--   Used for Mobile -> less Columns -->
-   <v-data-table
-     v-if="isMobile"
-     :headers="headersMobile"
-     :items="items"
-     :items-per-page="10"
-     class="elevation-1"
-     :footer-props="footerprops"
-   >
-     <!-- Diese Spalte der Tabelle gibt an welche labels das Item besitzt -->
-     <template v-slot:item.labels="{ item }">
-       <v-chip
-         :color ="label.colour"
-         dark
-         v-for="label in item.labels"
-         :key="label._id"
-         @click="addlabelToSearch(label)"
-       >
-         {{ getLabelName(label) }}
-       </v-chip>
-     </template>
-     <!-- Hier kann man ein Item auswählen oder editieren -->
-     <template v-slot:item.actions="{ item }">
-       <v-icon
-         small
-         class="mr-2"
-         @click="openItem(item)"
-       >
-         mdi-pencil
-       </v-icon>
-     </template>
-   </v-data-table>
- </div>
+  <div>
+    <!-- @v-data-table Header of the Table which shows 5 Items for each Page -->
+    <v-data-table
+      :headers="headers"
+      :items="items"
+      :items-per-page="10"
+      class="elevation-1"
+      :footer-props="footerprops"
+    >
+      <!-- @template puts the labels of the item with the related color in the v-slot of the grid -->
+      <template v-slot:item.labels="{ item }">
+        <!-- click on the lables of the item and add it to the lable of the searchbar -->
+        <!-- puts the Lablename in a Column of the grid-->
+        <v-chip
+          :color ="label.colour"
+          dark
+          v-for="label in item.labels"
+          :key="label._id"
+          @click="addlabelToSearch(label)"
+        >
+          {{ getLabelName(label) }}
+        </v-chip>
+      </template>
+      <!-- @template puts the actions of eachitem in the v-slot of the grid -->
+      <template v-slot:item.actions="{ item }">
+        <!-- @v-icon click on the item to open it -->
+        <v-icon
+          small
+          class="mr-2"
+          @click="openItem(item)"
+        >
+          mdi-magnify-plus
+        </v-icon>
+      </template>
+    </v-data-table>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+
+import matColors from '../assets/materialColors.json'
+import config from '../../config/config.json'
 // To Use our own predefined Axios Methods
 import ItemDataService from '@/services/itemDataService.ts'
 import LabelDataService from '@/services/labelDataService.ts'
@@ -87,60 +55,28 @@ export default Vue.extend({
   data () {
     return {
       /**
-       * Die Dummy Einträge für die Tabelle
+       * Props for Table
        */
       items: [] as Item[],
       itemsall: [] as Item[]
     }
   },
   /**
-   * Wird aufgerufen sobald die Seite aufgerufen wird
+   * Calls the mounted() function if the Page is called
    */
   mounted () {
-    const test : any = localStorage.getItem('user')
-    const user = JSON.parse(test)
     this.getAllItems()
   },
-  // NOTFALL TEST
+  // emergencytest
   computed: {
-    isMobile () {
-      console.log(window.innerWidth)
-      if (window.innerWidth <= 760) {
-        return true
-      } else {
-        return false
-      }
-    },
     getlabels () { // Automatically gets new Item after pushed in Vuex
-      // ToDo VuexTypeScriptFiles #14
       return this.$store.state.currentSelectedLabels
     },
     /**
-     * Die Überschriften für die Tabelle(Grid)
-     * @value bild, beschreibung, anzahl, fach, verfuegbar, labels, aktionen
+     * The headers of the Grid
+     * @value image, description, quantity, position, available, labels, actions
      */
     headers () { // Used to compute value from i18n into Header
-      return [
-        // {
-        //   text: 'ID',
-        //   align: 'start',
-        //   sortable: false,
-        //   value: 'id'
-        // },
-        { text: this.$t('name'), value: 'name.' + this.$i18n.locale },
-        { text: this.$t('description'), value: 'description.' + this.$i18n.locale },
-        { text: 'Quantity', value: 'quantity' },
-        { text: this.$t('position'), value: 'position' },
-        { text: this.$t('available'), value: 'available' },
-        { text: this.$t('labels'), value: 'labels' },
-        { text: this.$t('actions'), value: 'actions' }
-      ]
-    },
-    /**
-     * Die Überschriften für die Tabelle(Grid) for mobile
-     * @value bild, beschreibung, anzahl, fach, verfuegbar, labels, aktionen
-     */
-    headersMobile () { // Used to compute value from i18n into Header
       return [
         { text: this.$t('name'), value: 'name.' + this.$i18n.locale },
         { text: this.$t('description'), value: 'description.' + this.$i18n.locale },
@@ -150,6 +86,7 @@ export default Vue.extend({
     },
     /**
      * Used to compute value from i18n into Footer
+     * * @value showFirstLastPage, firstIcon, lastIcon, prevIcon, nextIcon
      */
     footerprops () {
       return {
@@ -164,47 +101,50 @@ export default Vue.extend({
   },
   watch: {
     /**
-     * Checks if getItem was triggered (Select Option was triggered in Grid)
+     * gets triggered if labels were added/removed in Searchbar
      */
     getlabels: function (labels: Label[]) {
       if (labels.length === 0) {
+        /** If no Labels are selected show all Items */
         this.getAllItems()
-        console.log('nothing here')
       } else {
+        /** getItems according to selected labels */
         this.items = []
+        /** Generate and fill Array of labelIDs for payload */
         const labelIDs = []
-        for (var x = 0; x < labels.length; x++) {
+        for (let x = 0; x < labels.length; x++) {
           labelIDs.push(labels[x]._id)
         }
         const search = { labelIds: labelIDs }
-        ItemDataService.findByLabel(search) // getAllItems via Axios
+        ItemDataService.findByLabel(search) // get all Items which have all Labels via Axios
           .then(response => {
-            // iteriert durch alle Items und pusht sie nach und nach in das Array
-            for (var i = 0; i < response.data.length; i++) {
+            // Iterates through Items and pushes them into an Array out of Items with labels ->
+            for (let i = 0; i < response.data.length; i++) {
               const result: Item = {
                 countable: response.data[i].countable,
-                id: response.data[i].id,
+                _id: response.data[i]._id,
                 name: response.data[i].name,
                 description: response.data[i].description,
                 quantity: response.data[i].quantity
               }
+              // Because Items are returned without their labels we fetch them here for each Item.
               LabelDataService.findLabelsByItemId(response.data[i]._id)
-              // LabelDataService.getAll()
+                // LabelDataService.getAll()
                 .then(response2 => {
                   result.labels = response2.data
                   this.items.push(result)
                   this.itemsall.push(result)
                 })
                 .catch(e => {
-                  console.log(e)
+                  console.error(e)
                 })
             }
           })
           .catch(e => {
-          // Falls Error, schreibe ihn in die Konsole
-            console.log(e.data)
-            console.log(e.status)
-            console.log(e.headers)
+            // If Error, print it in console
+            console.error(e.data)
+            console.error(e.status)
+            console.error(e.headers)
           })
       }
     }
@@ -222,69 +162,42 @@ export default Vue.extend({
     getAllItems () {
       ItemDataService.getAll()
         .then(response => {
-          console.log(response.data)
-          // iterates through response and pushs it into new Array // Todo replace as soon as everyType is same
+          // iterates through response and pushs it into new Array
           for (var i = 0; i < response.data.length; i++) {
-            const result: Item = {
-              countable: false,
-              id: response.data[i]._id,
-              name: response.data[i].name,
-              description: response.data[i].description,
-              quantity: response.data[i].quantity
-            }
-            console.log('TEST')
-            console.log(response.data[i]._id)
+            const result: Item = response.data[i]
+
             /**
              * gets all Items according to selected Labels (SearchFunction)
              */
             LabelDataService.findLabelsByItemId(response.data[i]._id)
               .then(response2 => {
-                console.log(response2)
-                console.log('response')
                 result.labels = response2.data
                 this.items.push(result)
                 this.itemsall.push(result)
-                console.log(this.items)
-                console.log(this.itemsall)
               })
               .catch(e => {
-                console.log('TEST123')
-                console.log(e)
+                console.error(e)
               })
           }
         })
         .catch(e => {
           // Falls Error, schreibe ihn in die Konsole
-          console.log(e.data)
-          console.log(e.status)
-          console.log(e.headers)
+          console.error(e.data)
+          console.error(e.status)
+          console.error(e.headers)
         })
     },
+
     /**
-     * gibt eine Farbe für einen label, wenn der Vergleich übereinstimmt
-     * @param labels sind die labels der Items (hier wurden noch Dummy Werte eingefügt
-     */
-    getColor (labels: string) {
-      if (labels === 'Schraube') return 'red'
-      else if (labels === 'Display') return 'orange'
-      else if (labels === 'Mutter') return 'blue'
-      else if (labels === 'Batterie') return 'purple'
-      else if (labels === 'LED') return 'grey'
-      else if (labels === 'M8') return 'teal'
-      else if (labels === 'Elektronik') return 'green'
-      else return 'white'
-    },
-    /**
-     * gibt ein Icon aus je nachdem ob ein Item verfügbar ist oder nicht
-     * @param verfuegbar sagt aus ob ein Item in dem Schrank vorrätig ist oder nicht
+     * checks if an item is available
+     /**
      */
     isAvailable (verfuegbar: string) {
       if (verfuegbar === 'Ja') return 'mdi-check-bold'
       else if (verfuegbar === 'Nein') return 'mdi-cancel'
     },
     /**
-     * gibt einen Farbenwert zurück je nachdem ob ein Item verfügbar ist oder nicht
-     * @param verfuegbar sagt aus ob ein Item in dem Schrank vorrätig ist oder nicht
+     * checks the value of the color
      */
     whichColor (verfuegbar: string) {
       if (verfuegbar === 'Ja') return 'green'
@@ -306,16 +219,17 @@ export default Vue.extend({
     openItem (item: Item) {
       this.$store.state.selectedItem = null
       this.$store.state.selectedItem = item
-      console.log('ITEM')
-      console.log(item)
+      const randomColor = matColors.colors[Math.floor(Math.random() * matColors.colors.length)]
       const LightObject = {
-        itemId: item.id,
-        color: '#BD5DCA',
-        duration: 60
+        itemId: item._id,
+        color: randomColor,
+        duration: config.searchDuration
       }
-      console.log(LightObject)
-      lightDataService.turnOnObject(LightObject).then(response => {
-        console.log('SUCCESS LIGHT UP')
+      lightDataService.turnOnObject(LightObject).then(() => {
+        this.$store.state.itemAvailable = true
+      }).catch(err => {
+        this.$store.state.itemAvailable = false
+        console.error(err)
       })
     }
   }
@@ -326,15 +240,6 @@ export default Vue.extend({
 
 </style>
 
-},
-{ text: this.$t('name'), value: 'name' },
-{ text: this.$t('description'), value: 'description' },
-{ text: this.$t('count'), value: 'count' },
-{ text: this.$t('position'), value: 'position' },
-{ text: this.$t('available'), value: 'available' },
-{ text: this.$t('labels'), value: 'labels' },
-{ text: this.$t('actions'), value: 'actions' }
-]
 <i18n>
 {
   "en": {

@@ -3,12 +3,12 @@
   <v-footer
     color="secondary"
     dark
-    style="margin: 0px; padding: 0px"
+    style="margin: 0; padding: 0"
   >
     <v-container fluid >
-      <v-card color="secondary" class="white--text text-center"  style="margin: 0px; padding: 0px" outlined>
-      <v-row style="margin: 0px; padding: 0px">
-        <v-col style="margin: 0px; padding: 0px">
+      <v-card color="secondary" class="white--text text-center"  style="margin: 0; padding: 0" outlined>
+      <v-row style="margin: 0; padding: 0">
+        <v-col style="margin: 0; padding: 0">
           <!-- @v-tooltip generates Information when hovering-->
           <v-tooltip v-for="title in 2"
                      :key="title" top>
@@ -25,7 +25,7 @@
             <span>{{$t(Footertitles.Tooltip[title])}}</span>
           </v-tooltip>
       </v-col>
-        <v-col style="margin: 0px; padding: 0px" >
+        <v-col style="margin: 0; padding: 0" >
           <!-- @v-tooltip generates Information when hovering-->
           <v-row>
           <v-tooltip v-for="title1 in 2"
@@ -44,13 +44,13 @@
           </v-tooltip>
           </v-row>
 
-        <v-row style="margin: 0px; padding: 0px">
-          <v-col style="margin: 0px; padding: 0px">
-            <v-card style="margin: 0px; padding: 0px" color="secondary"
+        <v-row style="margin: 0; padding: 0">
+          <v-col style="margin: 0; padding: 0">
+            <v-card style="margin: 0; padding: 0" color="secondary"
                     class="white--text text-center" outlined
             >
               <!-- sets the current Year -->
-              <v-card-text style="margin: 0px; padding: 0px" class="white--text">
+              <v-card-text style="margin: 0; padding: 0" class="white--text">
                 {{ new Date().getFullYear() }}
                 <v-icon small>
                   mdi-copyright
@@ -95,19 +95,19 @@
 export default {
   name: 'Footer',
   data: () => ({
-    // the icons array include the Name, Href and Hovertext of the icons
+    // the icons array include the Name, Href and Hover-text of the icons
     icons: {
       Name: ['', 'mdi-linkedin', 'mdi-instagram', 'mdi-gitlab'],
       Href: ['', 'https://de.linkedin.com/school/technische-hochschule-mittelhessen/', 'https://www.instagram.com/thmittelhessen/?hl=en', 'https://git.thm.de/softwaretechnik-projekt-pick-by-light-system-wise21_22'],
       Tooltip: ['', 'Linkedin', 'Instagram', 'Gitlab']
     },
-    // the Footertitles array include the Name, Href and Hovertext of the v-card-text
+    // the Footer-titles array include the Name, Href and Hover-text of the v-card-text
     Footertitles: {
       Name: ['', 'About us', 'Privacy'],
       Href: ['', '/about', 'https://www.thm.de/site/datenschutz.html'],
       Tooltip: ['', 'About us', 'Privacy']
     },
-    // the Footertitles array include the Name, Href and Hovertext of the v-card-text
+    // the Footer-titles array include the Name, Href and Hover-text of the v-card-text
     Footertitles1: {
       Name: ['', 'THMWebsite'],
       Href: ['', 'https://www.thm.de/site/'],

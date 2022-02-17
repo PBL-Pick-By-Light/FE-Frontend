@@ -1,3 +1,4 @@
+<!--Landing-Page-->
 <template>
   <div>
     <SearchBar/>
@@ -17,7 +18,6 @@ export default Vue.extend({
     ItemMenu,
     Grid,
     SearchBar
-    // Footer
   }
 })
 </script>

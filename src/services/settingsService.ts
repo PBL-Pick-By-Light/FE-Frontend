@@ -26,8 +26,8 @@ class SettingsService {
     ]
     }
    */
-  setSettings (Data: any[]): Promise<any> {
-    return http.post('/settings/update/', Data)
+  setSettings (Data: any): Promise<any> {
+    return http.post('/settings/update', Data)
   }
 }
 

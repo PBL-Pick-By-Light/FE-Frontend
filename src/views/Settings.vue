@@ -1,3 +1,4 @@
+<!--View for the settings page-->
 <template>
   <div>
     <Settings></Settings>

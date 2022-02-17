@@ -42,12 +42,13 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import LabelDataService from '@/services/labelDataService'
-import { Item } from '@/types/index.ts'
+import { Item, Label } from '@/types/index.ts'
 import i18n from '@/i18n'
+import Vue from 'vue'
 
-export default {
+export default Vue.extend({
   name: 'SearchBar',
   data () {
     return {
@@ -61,7 +62,7 @@ export default {
     getCurrentNameString () {
       return 'name.' + i18n.locale
     },
-    /** computes the selectedLabels and pushs + gets them into the Vuex-Store for Usage in Grid-Component */
+    /** computes the selectedLabels and push's + gets them into the Vuex-Store for Usage in Grid-Component */
     selectedLabels: {
       get () {
         return this.$store.state.currentSelectedLabels
@@ -75,29 +76,27 @@ export default {
   mounted () {
     LabelDataService.getAll() // getAllItems
       .then(response => {
-        console.log(response)
         this.labels = response.data
       })
       .catch(e => {
         // Falls Error, schreibe ihn in die Konsole
-        console.log(e)
+        console.error(e)
       })
   },
   methods: {
     /**  returns the name Property of the current Item depending on selected Language in i18n
      * @property {item} is the Label-Object which should be parsed. */
-    getName (item) {
+    getName (item: Item) {
       return item.name[i18n.locale]
     },
     /** Removes the item from selectedLabels via the "x" Button on Chip in V-AutoComplete
      * @property {item} is the current Label-Object which should be deleted */
-    remove (item) {
-      console.log(this.selectedLabels)
-      const index = this.selectedLabels.findIndex(key => key._id === item._id)
+    remove (item: Item) {
+      const index = this.selectedLabels.findIndex((key :Label) => key._id === item._id)
       if (index >= 0) this.selectedLabels.splice(index, 1)
     }
   }
-}
+})
 </script>
 
 <style scoped>

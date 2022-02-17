@@ -23,16 +23,16 @@ class ItemDataService {
   }
 
   // Route to delete an Item by Id
-  delete (Item: any[]): Promise<any> {
-    return http.post(`/items/delete/${Item}`)
+  delete (itemId: any): Promise<any> {
+    return http.delete(`/items/delete/${itemId}`)
   }
 
-  // Route to delete an Item by Id
+  // Route to update an Item
   update (Item: any[]): Promise<any> {
     return http.post(`/items/update/${Item}`)
   }
 
-  // Route to create an Item by Id
+  // Route to create an Item
   create (Item: any): Promise<any> {
     return http.post('/items/create', Item)
   }

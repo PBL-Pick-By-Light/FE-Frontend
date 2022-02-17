@@ -29,6 +29,7 @@
     type="password"
     required
     :rules="passwordRules"
+    v-on:keyup.enter="login"
     ></v-text-field>
     <v-spacer></v-spacer>
 </v-form>
@@ -39,8 +40,9 @@
     indeterminate
     color="primary"
   ></v-progress-circular>
-    <v-btn          :disabled="loginActive"
-                    @click="login()">
+    <v-btn          :disabled="loginActive || !valid"
+                    @click="login()"
+                    @keyup.enter="login()">
       {{ $t('Login') }}
     </v-btn>
   <v-checkbox           :disabled="loginActive"
@@ -52,6 +54,40 @@
             </v-layout>
          </v-container>
       </v-main>
+
+  <div>
+    <v-snackbar
+      v-model="successTrigger"
+      color="success"
+    >
+      {{ text }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          text
+          v-bind="attrs"
+          @click="successTrigger = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+  </div>
+  <v-snackbar
+    v-model="errorTrigger"
+    color="red"
+  >
+    {{ text }}
+    <template v-slot:action="{ attrs }">
+      <v-btn
+        text
+        v-bind="attrs"
+        @click="errorTrigger = false"
+      >
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
+
 </v-app>
 </template>
 
@@ -66,7 +102,7 @@ export default Vue.extend({
     valid: true,
     name: 'form',
     username: '',
-    text: null as any,
+    text: null as string,
     loginActive: false,
     errorTrigger: false,
     successTrigger: false,
@@ -74,23 +110,22 @@ export default Vue.extend({
     snackbar: '',
 
     usernameRules: [
-      'Username Is Required'
+      v => !!v || 'Name is required',
+      v => (v && v.length <= 15) || 'Name must be less than 10 characters'
     ],
     passwordRules: [
-      'Password Is Required'
+      v => !!v || 'Password is required',
+      v => (v && v.length > 5) || 'Password must be at least 5 characters'
     ]
   }),
   methods: {
     login () {
       this.loginActive = true
       const user: User = { username: this.username, password: this.password }
-      authDataService.login(user).then((result) => {
+      authDataService.login(user).then(() => {
         this.text = this.$t('LoginSuccessful')
         this.successTrigger = true
         this.loginActive = false
-        console.log(result)
-        this.$store.state.auth.role = result.role
-        this.$store.state.auth.loggedIn = true
         this.$router.push('/')
       })
         .catch(err => {

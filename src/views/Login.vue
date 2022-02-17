@@ -1,3 +1,4 @@
+<!--View for the login component-->
 <template>
   <div>
     <Login />

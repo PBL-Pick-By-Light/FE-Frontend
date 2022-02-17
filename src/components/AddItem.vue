@@ -3,12 +3,8 @@
     <div class="item_form">
       <v-form>
         <div>
-          <v-row>
-            <v-col class="col-3 offset-1">{{$t('Name')}}</v-col>
-            <v-col class="col-3 offset-2">{{$t('Description')}}</v-col>
-          </v-row>
           <v-row  justify="center" v-for="(chosen,index) in languagesNew" :key="index" >
-            <v-col md="8" cols="12" offset-md="2">
+            <v-col md="8" cols="12">
               <v-card min-width="100%">
                 <v-row class="mt-1" align="center" justify="center">
                   <v-col cols="3" md="2">    <v-text-field
@@ -48,14 +44,14 @@
           <v-row class="col-12 col-lg-8 offset-lg-2">
 
             <v-row align="center">
-              <v-col class="col-2">
+              <v-col class="col-sm-8 col-md-2">
                 <v-checkbox
                   v-model="countable"
                   :label="$t('Countable')">
                 </v-checkbox>
               </v-col>
 
-              <v-col class="mt-5 col-8">
+              <v-col class="mt-5 col-sm-10 col-md-6">
                 <v-autocomplete
                   v-model="labels"
                   :items="labelsList"
@@ -82,7 +78,10 @@
                       </v-list-item-action>
                       <v-list-item-content>
                         <v-list-item-title>
-                          <v-chip dark :color="item.colour"> {{ getName(item) }} </v-chip>
+                          <v-row>
+                            <v-col><v-chip dark :color="item.colour"> {{ getName(item) }} </v-chip></v-col>
+                            <v-col>                           <v-btn color="red" @click="deleteLabel(item)">Delete</v-btn> </v-col>
+                          </v-row>
                         </v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
@@ -90,15 +89,16 @@
                 </v-autocomplete>
 
               </v-col>
-              <v-col class="col-2">
-                <create-label class="plus">
+              <v-col class=" col-sm-8 offset-sm-2 col-md-2 offset-md-1">
+                <create-label class="plus" v-on:exit="getAllLabels()">
                 </create-label>
               </v-col>
             </v-row>
           </v-row>
           <v-row class="col-8 offset-2">
             <v-btn block
-                   @click="sendItem">
+                   @click="sendItem"
+            >
               {{$t('Save')}}
             </v-btn>
           </v-row>
@@ -107,12 +107,12 @@
         </div>
         <div>
           <v-snackbar
+            color="green"
             v-model="success"
           >
-            {{ text }}
+            {{ $t('SuccessText') }}
             <template v-slot:action="{ attrs }">
               <v-btn
-                color="green"
                 text
                 v-bind="attrs"
                 @click="success = false"
@@ -124,12 +124,12 @@
         </div>
         <div>
           <v-snackbar
+            color="red"
             v-model="error"
           >
-            {{ text }}
+            {{ $t('ErrorText') }}
             <template v-slot:action="{ attrs }">
               <v-btn
-                color="green"
                 text
                 v-bind="attrs"
                 @click="error = false"
@@ -139,11 +139,6 @@
             </template>
           </v-snackbar>
         </div>
-
-        <div>
-          <!--          <p >{{itemNames}}</p>-->
-        </div>
-
       </v-form>
     </div>
   </v-container>
@@ -153,7 +148,7 @@
 /* eslint-disable */
 import createLabel from '@/components/createLabel.vue'
 import ItemDataService from '@/services/itemDataService'
-import { Item, Label } from '@/types'
+import { Item, Label, Language } from '@/types'
 import labelDataService from '@/services/labelDataService'
 import languageDataService from '@/services/languageDataService'
 import Vue from 'vue'
@@ -173,44 +168,45 @@ export default Vue.extend({
       success: false,
       error: false,
       snackbar:'',
-      text: '',
       countable: false,
-      languagesNew: [] as any,
-      languages: [{
-        lang: 'de',
-        id: '1525211cas'
-      },
-        {
-          lang: 'en',
-          id: '15252fas11cas'
-        }]
+      languagesNew: [] as Language[],
     }
   },
   mounted () {
-    // const x = {
-    //   name: { de: 'A20.86.8', en: 'A20.86,3' },
-    //   ipAddress: '192.168.0.1'
-    // }
-    // roomsDataService.create(x).then(result => {
-    //   console.log('RESUUULTLTLTLTL')
-    //   console.log(result)
-    // })
+    /**
+     * Get All Languages of which each gets listed on the Page
+     */
     languageDataService.getAll()
-      .then((result) => {
+      .then((result :any) => {
         this.languagesNew = result.data
-        console.log(this.result.data)
       })
-    labelDataService.getAll().then((response) => {
-      this.labelsList = response.data
-    })
+    this.getAllLabels()
   },
   methods: {
+    /**
+     * Deletes Label from DB
+     * @param label  label which should be deleted from Backend
+     * */
+    deleteLabel(label: Label) {
+      labelDataService.deleteLabelByLabelId(label._id).then(() => {
+        this.success = true
+        this.getAllLabels()
+      }).catch(err => {
+        console.error(err)
+        this.error = true
+      })
+    },
+    getAllLabels() {
+      labelDataService.getAll().then((response) => {
+        this.labelsList = response.data
+      })
+    },
     /**
      * Used to remove Item from selected Labels
      * @param item label which should be removed
      */
-    remove(item) {
-      const index = this.labels.findIndex(key => key._id === item._id);
+    remove (item :Label) {
+      const index = this.labels.findIndex((key:Label) => key._id === item._id);
       this.labels.splice(index,1);
     },
     /**
@@ -220,37 +216,35 @@ export default Vue.extend({
     getName (item: any) {
       return item.name[this.$i18n.locale]
     },
-    /*getLabels () : Label [] {
-      labelDataService.getAll().then(result => {
-        for (let i = 0; i < result.data.length; i++) {
-          this.labelsList.push(result.data[i])
-          console.log(this.labelsList)
-        }
-        return this.labelsList
-      })
-    },*/
-    sendItem () {
-      var commonKeys = []
+
+
+    /**
+     * Creates the Item based on Inputs + existing Languages
+     */
+    sendItem: function () {
+      var languageKeys: string[] = []
       this.languagesNew.forEach((value) => {
-        commonKeys.push(value.lang)
+        languageKeys.push(value.lang)
       })
       /**
-       * Converts All Names to a Map with name: {lang: nameInLang}
+       * Converts All Names to a Map with Format of { name: [{lang: nameInLang},] }
+       * Needed for variable-Multi-Lang-Support
        */
-      const zipArrays = (keysArray, valuesArray) => Object.fromEntries(keysArray.map((value, index) => [value, valuesArray[index]]))
+      const createLangMap = (keysArray: any, valuesArray: any) => Object.fromEntries(keysArray.map((value: string, index: number) => [value, valuesArray[index]]))
 
-      const name = zipArrays(commonKeys, this.itemNames)
+      const name = createLangMap(languageKeys, this.itemNames)
       /**
        * Converts All Descriptions to a Map with description: {lang: descriptionInLang}
        */
-      const description = zipArrays(commonKeys, this.aboutItem)
-      console.log(this.labels)
+      const description = createLangMap(languageKeys, this.aboutItem)
       /**
        * Convert Labels to Ids
        */
-      const selectedLabelIds = []
-      this.labels.forEach(value => {
-        selectedLabelIds.push(value._id)
+      const selectedLabelIds: string[] = []
+      this.labels.forEach((value: Label) => {
+        if (value._id != null) {
+          selectedLabelIds.push(value._id)
+        }
       })
       const item: Item = {
         name,
@@ -260,18 +254,14 @@ export default Vue.extend({
       }
       ItemDataService.create(item)
         .then(response => {
-          console.log("SUCCESS")
-          this.text = 'Success! The data was sent'
           this.success = true
           console.log(response)
         })
         .catch(e => {
-          console.log(e)
-          this.text = 'Error! Something goes wrong. Try again'
+          console.error(e)
           this.error = true
         })
-      console.log(item)
-      console.log(item.name)
+
     }
 
   },
@@ -285,39 +275,29 @@ export default Vue.extend({
 
 <style scoped>
 
-/*div.container{*/
-/*  margin-top: 40px*/
-/*}*/
-/*.sbtn{*/
-/*  margin-top: 10px;*/
-/*}*/
-/*.plus{*/
-/*  margin: 0 auto;*/
-/*}*/
-
 </style>
 
 <i18n>
 {
   "en": {
+    "delete": "Delete",
     "Name": "Name",
-    "GE": "GE",
-    "EN": "EN",
     "Description": "Description",
-    "Box": "Box",
     "Countable": "Countable",
     "Labels": "Labels",
-    "Save": "Save"
+    "Save": "Save",
+    "SuccessText": "Success! Operation Successfull",
+    "ErrorText": "Error! Something goes wrong. Try again"
   },
   "de": {
+    "delete": "Löschen",
     "Name": "Name",
-    "GE": "DE",
-    "EN": "EN",
     "Description": "Beschreibung",
-    "Box": "Fach",
     "Countable": "Countable",
     "Labels": "Labels",
-    "Save": "Speichern"
+    "Save": "Speichern",
+    "SuccessText": "Erfolg!",
+    "ErrorText": "Fehler! Etwas ist fehlgeschlagen. Probieren Sie das noch Mal"
   }
 }
 </i18n>
