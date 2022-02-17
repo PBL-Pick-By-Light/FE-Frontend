@@ -7,4 +7,5 @@ Wraps the Logo of the [NavigationBar](./NavigationBar.md) in a component.
 -  `<router-link>` redirects to the main page if the logo is clicked
 - `<v-img>` the Logo
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+

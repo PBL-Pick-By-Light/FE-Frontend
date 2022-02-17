@@ -31,4 +31,5 @@ Defines the form for adding new items
   - `getName (item: any)`: Used to get Name based on current language @param item item which has property name
   - `sendItem ()`: is used to send all entered data to the server to create a new item
 
-[_back to wiki_](./)
+[_back to documentation_](../)
+
